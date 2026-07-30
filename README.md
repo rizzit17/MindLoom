@@ -7,9 +7,11 @@
 ## 🕒 Time Note & Submission Details
 
 - **Time Spent**: ~4.5 Hours
-- **LLM Provider**: **Google Gemini API** (`gemini-2.5-flash` via `@google/genai`) and **OpenAI API** (`gpt-4o-mini`). Configured with native JSON Structured Output mode (`responseMimeType: "application/json"`).
+- **LLM Provider**: **Groq API** (`llama-3.3-70b-versatile`), **Google Gemini API** (`gemini-2.5-flash`), and **OpenAI API** (`gpt-4o-mini`). Configured with native JSON Structured Output mode (`response_format: { type: "json_object" }`).
 - **MOCK Mode Support**: Supported via `MOCK_MODE=true` environment flag for running fully offline without requiring an API key.
-- **Stretch Goal Completed**: **Light / Dark Theme** driven by CSS variables (`:root` / `.dark` design tokens) with custom studio dot grid background texture and theme-aware components.
+- **Stretch Goals Completed (2 of 4)**:
+  1. 🎨 **Light / Dark Theme**: Driven by CSS variables (`:root` / `.dark` design tokens) with custom studio dot grid background texture and theme-aware components.
+  2. 🔍 **Drill-down Expansion**: Clicking any node surfaces a **"Drill Down & Expand Node"** action button that triggers a `POST /api/mindmaps/:id/expand` endpoint, dynamically expanding child sub-nodes for that node.
 
 ---
 
@@ -28,7 +30,7 @@ Visualli Mini Mindmap treats all LLM outputs as untrusted input. Malformed respo
                                                                  │
                                                    ┌─────────────▼─────────────┐
                                                    │ LLM Provider Factory      │
-                                                   │ (Gemini / Mock Provider)  │
+                                                   │ (Groq / OpenAI / Mock)    │
                                                    └─────────────┬─────────────┘
                                                                  │
                                                    ┌─────────────▼─────────────┐
@@ -52,6 +54,8 @@ Visualli Mini Mindmap treats all LLM outputs as untrusted input. Malformed respo
     - Single connected component (all nodes reachable from root).
 - **Automated Repair-Retry Flow**:
   - If validation fails, `MindmapService` invokes the LLM exactly once more, passing itemized validation error descriptions to prompt self-correction.
+- **Drill-Down Expansion API**:
+  - `POST /api/mindmaps/:id/expand` appends new sub-nodes dynamically branching off any selected parent node.
 - **Budget Truncation (12,000 Chars)**:
   - Input text exceeding 12,000 characters is deterministically truncated pre-LLM call.
   - The API response surfaces `truncated: true` and logs warning metadata.
@@ -129,7 +133,8 @@ pnpm --filter client test
 | `PORT` | Backend server port | `3001` |
 | `NODE_ENV` | Environment mode (`development` / `production` / `test`) | `development` |
 | `MOCK_MODE` | Set `true` to use deterministic mock LLM fixtures without API key | `true` |
-| `GEMINI_API_KEY` | Gemini API key for live Gemini 2.5 Flash generation | `""` |
+| `GROQ_API_KEY` | Groq API key for high-speed live LLaMA 3.3 70B inference | `""` |
+| `OPENAI_API_KEY` | OpenAI API key for live GPT-4o-mini generation | `""` |
 | `DATABASE_PATH` | SQLite storage file location | `./data/mindmaps.db` |
 | `VITE_API_URL` | API base URL for Vite frontend client | `http://localhost:3001` |
 
@@ -150,6 +155,18 @@ Generates, validates, persists, and returns a mindmap.
   - `201 Created`: Returns mindmap object.
   - `400 Bad Request`: Input empty or < 20 characters.
   - `422 Unprocessable Entity`: LLM output failed domain validation after repair attempt (surfaces `details` array of itemized failures).
+
+### `POST /api/mindmaps/:id/expand`
+Expands a node into child sub-nodes.
+
+- **Request Body**:
+  ```json
+  {
+    "nodeId": "n2"
+  }
+  ```
+- **Responses**:
+  - `200 OK`: Returns updated mindmap with new child nodes and connections.
 
 ### `GET /api/mindmaps`
 Returns all persisted mindmap summaries.
