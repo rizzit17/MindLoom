@@ -86,4 +86,9 @@ export class MindmapRepository {
       return null;
     }
   }
+
+  deleteAll(): void {
+    const stmt = this.db.prepare(`DELETE FROM mindmaps`);
+    stmt.run();
+  }
 }

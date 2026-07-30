@@ -47,6 +47,22 @@ export const AppContent: React.FC = () => {
     queryFn: mindmapApi.getMindmaps,
   });
 
+  // Clear history mutation
+  const clearHistoryMutation = useMutation({
+    mutationFn: mindmapApi.clearHistory,
+    onSuccess: () => {
+      setCurrentMindmap(null);
+      setSelectedNode(null);
+      refetchHistory();
+      setToast({
+        id: Date.now().toString(),
+        type: 'info',
+        title: 'History Cleared',
+        message: 'All saved mindmaps have been wiped from generation history.',
+      });
+    },
+  });
+
   // Generate mindmap mutation
   const generateMutation = useMutation({
     mutationFn: mindmapApi.generateMindmap,
@@ -206,6 +222,7 @@ export const AppContent: React.FC = () => {
           isOpen={isHistoryOpen}
           onToggle={() => setIsHistoryOpen(false)}
           onSelectMindmap={handleSelectHistoryItem}
+          onClearHistory={() => clearHistoryMutation.mutate()}
         />
 
         {/* Workspace Container (Shifts Right smoothly when Sidebar Opens) */}

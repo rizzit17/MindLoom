@@ -6,21 +6,6 @@ interface InputPanelProps {
   isLoading: boolean;
 }
 
-const SAMPLE_TEXTS = [
-  {
-    label: 'Microservices Architecture',
-    text: `Microservices architecture decomposes a software application into small, independent services that communicate over lightweight protocols like HTTP/REST or gRPC. Each service is owned by a small team and focused on a single business capability. Core benefits include independent scalability, technology flexibility, isolated deployments, and fault isolation. Key operational challenges involve distributed logging, API gateway routing, data consistency, and service mesh management.`,
-  },
-  {
-    label: 'AI & Machine Learning',
-    text: `Artificial intelligence empowers computer systems to perform tasks traditionally requiring human cognition, such as visual perception, natural language processing, decision-making, and autonomous navigation. Machine learning is a core subset focused on algorithms that learn patterns directly from datasets without explicit programming. Deep neural networks, supervised learning, reinforcement learning, and modern transformer architectures drive modern advances in generative AI.`,
-  },
-  {
-    label: 'DevOps & CI/CD Pipeline',
-    text: `DevOps is a set of practices combining software development and IT operations to shorten the development lifecycle and provide continuous delivery with high software quality. Continuous Integration (CI) automatically builds and runs automated tests whenever code changes are pushed. Continuous Deployment (CD) automates releasing validated code into production environments, utilizing containerization with Docker and orchestration with Kubernetes.`,
-  },
-];
-
 export const InputPanel: React.FC<InputPanelProps> = ({ onGenerate, isLoading }) => {
   const [text, setText] = useState('');
   const textareaId = useId();
@@ -80,26 +65,11 @@ export const InputPanel: React.FC<InputPanelProps> = ({ onGenerate, isLoading })
           </p>
         )}
 
-        <div className="flex items-center justify-between gap-4 mt-1 flex-wrap">
-          <div className="flex items-center gap-2 overflow-x-auto py-1 max-w-full">
-            <span className="text-xs font-medium text-ink/60">Presets:</span>
-            {SAMPLE_TEXTS.map((sample, idx) => (
-              <button
-                key={idx}
-                type="button"
-                disabled={isLoading}
-                onClick={() => setText(sample.text)}
-                className="studio-btn text-xs px-2.5 py-1 disabled:opacity-50 whitespace-nowrap"
-              >
-                {sample.label}
-              </button>
-            ))}
-          </div>
-
+        <div className="flex items-center justify-end gap-4 mt-1">
           <button
             type="submit"
             disabled={isDisabled}
-            className="studio-btn-primary px-5 py-2 text-xs font-display font-bold uppercase tracking-wider flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap ml-auto"
+            className="studio-btn-primary px-5 py-2 text-xs font-display font-bold uppercase tracking-wider flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap"
           >
             {isLoading ? (
               <>

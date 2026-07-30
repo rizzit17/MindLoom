@@ -60,4 +60,9 @@ export class MindmapsController {
     const updatedMindmap = await service.expandNode(id, nodeId);
     res.status(200).json(updatedMindmap);
   };
+
+  clearHistory = async (_req: Request, res: Response): Promise<void> => {
+    this.repository.deleteAll();
+    res.status(200).json({ message: 'History cleared successfully.' });
+  };
 }

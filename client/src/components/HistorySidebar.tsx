@@ -1,5 +1,5 @@
 import React from 'react';
-import { History, Clock, Network, X } from 'lucide-react';
+import { History, Clock, Network, X, Trash2 } from 'lucide-react';
 import { MindmapSummaryItem } from '@visualli/shared';
 
 interface HistorySidebarProps {
@@ -8,6 +8,7 @@ interface HistorySidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   onSelectMindmap: (id: string) => void;
+  onClearHistory?: () => void;
 }
 
 export const HistorySidebar: React.FC<HistorySidebarProps> = ({
@@ -16,6 +17,7 @@ export const HistorySidebar: React.FC<HistorySidebarProps> = ({
   isOpen,
   onToggle,
   onSelectMindmap,
+  onClearHistory,
 }) => {
   if (!isOpen) return null;
 
@@ -78,6 +80,16 @@ export const HistorySidebar: React.FC<HistorySidebarProps> = ({
           })
         )}
       </div>
+
+      {history.length > 0 && onClearHistory && (
+        <button
+          onClick={onClearHistory}
+          className="studio-btn p-2 text-xs text-red-500 hover:bg-red-500/10 flex items-center justify-center gap-2 w-full mt-auto"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          <span>Clear All History</span>
+        </button>
+      )}
     </aside>
   );
 };

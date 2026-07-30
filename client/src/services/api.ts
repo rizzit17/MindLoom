@@ -36,4 +36,8 @@ export const mindmapApi = {
     const response = await apiClient.post<Mindmap>(`/mindmaps/${mindmapId}/expand`, { nodeId });
     return response.data;
   },
+
+  clearHistory: async (): Promise<void> => {
+    await apiClient.delete('/mindmaps');
+  },
 };
