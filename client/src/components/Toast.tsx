@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AlertCircle, X, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,6 +16,15 @@ interface ToastProps {
 }
 
 export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => {
+      onDismiss();
+    }, 3500); // Auto-dismiss after 3.5 seconds
+
+    return () => clearTimeout(timer);
+  }, [toast, onDismiss]);
+
   if (!toast) return null;
 
   const isError = toast.type === 'error';
