@@ -4,6 +4,15 @@
 
 ---
 
+## 🕒 Time Note & Submission Details
+
+- **Time Spent**: ~4.5 Hours
+- **LLM Provider**: **Google Gemini API** (`gemini-2.5-flash` via `@google/genai`) and **OpenAI API** (`gpt-4o-mini`). Configured with native JSON Structured Output mode (`responseMimeType: "application/json"`).
+- **MOCK Mode Support**: Supported via `MOCK_MODE=true` environment flag for running fully offline without requiring an API key.
+- **Stretch Goal Completed**: **Light / Dark Theme** driven by CSS variables (`:root` / `.dark` design tokens) with custom studio dot grid background texture and theme-aware components.
+
+---
+
 ## 🏛 Architecture Overview
 
 Visualli Mini Mindmap treats all LLM outputs as untrusted input. Malformed responses trigger an automated repair flow with itemized error descriptions before persisting or serving data to the client.
@@ -19,7 +28,7 @@ Visualli Mini Mindmap treats all LLM outputs as untrusted input. Malformed respo
                                                                  │
                                                    ┌─────────────▼─────────────┐
                                                    │ LLM Provider Factory      │
-                                                   │ (OpenAI / MockProvider)   │
+                                                   │ (Gemini / Mock Provider)  │
                                                    └─────────────┬─────────────┘
                                                                  │
                                                    ┌─────────────▼─────────────┐
@@ -31,7 +40,7 @@ Visualli Mini Mindmap treats all LLM outputs as untrusted input. Malformed respo
 
 ---
 
-## 📦 Features
+## 📦 Features & Verification Checklist
 
 - **Strict Validation Engine**:
   - Validates JSON structure via Zod schema (`shared/src/schemas/mindmap.schema.ts`).
@@ -48,8 +57,10 @@ Visualli Mini Mindmap treats all LLM outputs as untrusted input. Malformed respo
   - The API response surfaces `truncated: true` and logs warning metadata.
 - **Interactive Node-Link Diagram**:
   - Visualized using React Flow (`@xyflow/react`) and auto-layout calculated via Dagre graph engine.
-  - Root node features distinct vibrant styling and pulsing animation accents.
+  - Central root node features distinct vibrant terracotta styling.
   - Interactive click handling opens the summary panel showing exact 1-sentence summaries and node relationship connections.
+- **Split Workspace Push Layout**:
+  - History sidebar operates as an inline collapsible push-panel, allowing simultaneous viewing of history and workspace without screen overlap.
 - **Persistent Storage**:
   - Mindmaps persisted locally in SQLite (`better-sqlite3` with WAL mode enabled).
 - **Complete Test Coverage**:
@@ -76,7 +87,15 @@ pnpm install
 cp .env.example .env
 ```
 
-### 3. Running Locally
+### 3. Running in MOCK_MODE (No API Key Required)
+
+Set `MOCK_MODE=true` in `.env`. The backend will automatically return realistic canned mindmaps for preset topics (Microservices, AI, DevOps) without calling external API endpoints:
+
+```env
+MOCK_MODE=true
+```
+
+### 4. Running Locally
 
 ```bash
 # Run server & client concurrently in dev mode
@@ -91,7 +110,7 @@ pnpm dev
 ## 🧪 Running Tests
 
 ```bash
-# Run all tests across the workspace (backend + frontend)
+# Run all 21 tests across the workspace (backend + frontend)
 pnpm test
 
 # Run backend server tests only
@@ -109,8 +128,8 @@ pnpm --filter client test
 |---|---|---|
 | `PORT` | Backend server port | `3001` |
 | `NODE_ENV` | Environment mode (`development` / `production` / `test`) | `development` |
-| `MOCK_MODE` | Set `true` to use deterministic mock LLM fixtures without OpenAI API key | `true` |
-| `OPENAI_API_KEY` | OpenAI API key for live GPT-4o-mini generation | `""` |
+| `MOCK_MODE` | Set `true` to use deterministic mock LLM fixtures without API key | `true` |
+| `GEMINI_API_KEY` | Gemini API key for live Gemini 2.5 Flash generation | `""` |
 | `DATABASE_PATH` | SQLite storage file location | `./data/mindmaps.db` |
 | `VITE_API_URL` | API base URL for Vite frontend client | `http://localhost:3001` |
 
