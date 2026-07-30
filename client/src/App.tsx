@@ -7,7 +7,7 @@ import { MindmapCanvas } from './components/MindmapCanvas';
 import { SummaryPanel } from './components/SummaryPanel';
 import { HistorySidebar } from './components/HistorySidebar';
 import { Toast, ToastMessage } from './components/Toast';
-import { Sun, Moon, BrainCircuit, AlertTriangle, Sparkles } from 'lucide-react';
+import { Sun, Moon, BrainCircuit, AlertTriangle, Sparkles, History } from 'lucide-react';
 import axios from 'axios';
 
 const queryClient = new QueryClient({
@@ -130,30 +130,32 @@ export const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-bg text-ink flex flex-col font-mono selection:bg-accent selection:text-white">
+    <div className="min-h-screen h-screen bg-bg text-ink flex flex-col font-mono selection:bg-accent selection:text-white overflow-hidden">
       <Toast toast={toast} onDismiss={() => setToast(null)} />
 
-      <HistorySidebar
-        history={history}
-        selectedId={currentMindmap?.id || null}
-        isOpen={isHistoryOpen}
-        onToggle={() => setIsHistoryOpen((prev) => !prev)}
-        onSelectMindmap={handleSelectHistoryItem}
-      />
-
       {/* Main Studio Header */}
-      <header className="sticky top-0 z-30 bg-surface border-b-[1.5px] border-border px-6 py-3.5 flex items-center justify-between shadow-[0_2px_0_var(--border)]">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-accent border-[1.5px] border-border text-white rounded-[4px] shadow-[2px_2px_0px_var(--border)]">
-            <BrainCircuit className="w-5 h-5 stroke-[2]" />
-          </div>
-          <div>
-            <h1 className="text-lg font-display font-black tracking-tight text-ink flex items-center gap-2 leading-none">
-              Visualli <span className="bg-bg border border-border text-[10px] font-mono font-medium px-2 py-0.5 rounded-[3px] text-accent font-semibold">[mini mindmap]</span>
-            </h1>
-            <p className="text-[11px] font-mono text-ink/60 mt-0.5">
-              Structured LLM Schema Engine
-            </p>
+      <header className="sticky top-0 z-30 bg-surface border-b-[1.5px] border-border px-6 py-3.5 flex items-center justify-between shadow-[0_2px_0_var(--border)] flex-shrink-0">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setIsHistoryOpen((prev) => !prev)}
+            className={`studio-btn px-3 py-1.5 text-xs font-mono flex items-center gap-2 ${
+              isHistoryOpen ? 'bg-accent text-white border-border shadow-[2px_2px_0px_var(--border)]' : ''
+            }`}
+            title="Toggle Generation History Sidebar"
+          >
+            <History className={`w-4 h-4 ${isHistoryOpen ? 'text-white' : 'text-accent'}`} />
+            <span>History ({history.length})</span>
+          </button>
+
+          <div className="flex items-center gap-3">
+            <div className="p-1.5 bg-accent border-[1.5px] border-border text-white rounded-[4px] shadow-[2px_2px_0px_var(--border)]">
+              <BrainCircuit className="w-4 h-4 stroke-[2]" />
+            </div>
+            <div>
+              <h1 className="text-base font-display font-black tracking-tight text-ink flex items-center gap-2 leading-none">
+                Visualli <span className="bg-bg border border-border text-[10px] font-mono font-medium px-2 py-0.5 rounded-[3px] text-accent font-semibold">[mini mindmap]</span>
+              </h1>
+            </div>
           </div>
         </div>
 
@@ -173,46 +175,57 @@ export const AppContent: React.FC = () => {
         </div>
       </header>
 
-      {/* Content Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6 flex flex-col gap-6">
-        <InputPanel
-          onGenerate={(text) => generateMutation.mutate(text)}
-          isLoading={generateMutation.isPending}
+      {/* Main Split Layout Workspace */}
+      <div className="flex-1 flex w-full overflow-hidden">
+        <HistorySidebar
+          history={history}
+          selectedId={currentMindmap?.id || null}
+          isOpen={isHistoryOpen}
+          onToggle={() => setIsHistoryOpen(false)}
+          onSelectMindmap={handleSelectHistoryItem}
         />
 
-        {currentMindmap?.truncated && (
-          <div className="p-3 bg-amber-500/15 border-[1.5px] border-amber-500/40 text-amber-800 dark:text-amber-200 rounded-[4px] font-mono text-xs font-medium shadow-[2px_2px_0px_var(--border)] flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
-            <span>
-              Input text exceeded 12,000 characters and was truncated prior to LLM inference.
-            </span>
-          </div>
-        )}
+        {/* Workspace Container (Shifts Right smoothly when Sidebar Opens) */}
+        <main className="flex-1 max-w-7xl w-full mx-auto p-6 flex flex-col gap-6 overflow-y-auto">
+          <InputPanel
+            onGenerate={(text) => generateMutation.mutate(text)}
+            isLoading={generateMutation.isPending}
+          />
 
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          <div className={`${selectedNode ? 'lg:col-span-2' : 'lg:col-span-3'} transition-all duration-200 h-[520px]`}>
-            <MindmapCanvas
-              mindmap={currentMindmap}
-              selectedNodeId={selectedNode?.id || null}
-              onSelectNode={(node) => setSelectedNode(node)}
-            />
-          </div>
+          {currentMindmap?.truncated && (
+            <div className="p-3 bg-amber-500/15 border-[1.5px] border-amber-500/40 text-amber-800 dark:text-amber-200 rounded-[4px] font-mono text-xs font-medium shadow-[2px_2px_0px_var(--border)] flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
+              <span>
+                Input text exceeded 12,000 characters and was truncated prior to LLM inference.
+              </span>
+            </div>
+          )}
 
-          {selectedNode && (
-            <div className="lg:col-span-1">
-              <SummaryPanel
-                node={selectedNode}
+          <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <div className={`${selectedNode ? 'lg:col-span-2' : 'lg:col-span-3'} transition-all duration-200 h-[520px]`}>
+              <MindmapCanvas
                 mindmap={currentMindmap}
-                onClose={() => setSelectedNode(null)}
+                selectedNodeId={selectedNode?.id || null}
                 onSelectNode={(node) => setSelectedNode(node)}
               />
             </div>
-          )}
-        </div>
-      </main>
+
+            {selectedNode && (
+              <div className="lg:col-span-1">
+                <SummaryPanel
+                  node={selectedNode}
+                  mindmap={currentMindmap}
+                  onClose={() => setSelectedNode(null)}
+                  onSelectNode={(node) => setSelectedNode(node)}
+                />
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
 
       {/* Studio Footer */}
-      <footer className="border-t-[1.5px] border-border bg-surface px-6 py-3 font-mono text-xs text-ink/60 flex items-center justify-between">
+      <footer className="border-t-[1.5px] border-border bg-surface px-6 py-2.5 font-mono text-xs text-ink/60 flex items-center justify-between flex-shrink-0">
         <span>Visualli.ai — Mini Mindmap Studio</span>
         <span className="text-accent font-medium font-display">React Flow • Dagre • Zod Repair Engine</span>
       </footer>
