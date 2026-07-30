@@ -1,14 +1,16 @@
 import React, { memo } from 'react';
-import { Handle, Position, NodeProps } from '@xyflow/react';
+import { Handle, Position, NodeProps, Node } from '@xyflow/react';
 import { Sparkles } from 'lucide-react';
 import { MindmapNode } from '@visualli/shared';
 
-export interface MindmapNodeData extends MindmapNode {
+export type MindmapNodeData = MindmapNode & {
   isSelected?: boolean;
   onNodeClick?: (node: MindmapNode) => void;
-}
+} & Record<string, unknown>;
 
-export const CustomRootNode = memo(({ data }: NodeProps<{ data: MindmapNodeData }>) => {
+export type MindmapCustomNode = Node<MindmapNodeData>;
+
+export const CustomRootNode = memo(({ data }: NodeProps<MindmapCustomNode>) => {
   const isSelected = data.isSelected;
 
   return (
@@ -42,7 +44,7 @@ export const CustomRootNode = memo(({ data }: NodeProps<{ data: MindmapNodeData 
 
 CustomRootNode.displayName = 'CustomRootNode';
 
-export const CustomChildNode = memo(({ data }: NodeProps<{ data: MindmapNodeData }>) => {
+export const CustomChildNode = memo(({ data }: NodeProps<MindmapCustomNode>) => {
   const isSelected = data.isSelected;
 
   return (

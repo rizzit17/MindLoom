@@ -1,13 +1,13 @@
 import dagre from 'dagre';
-import { Node, Edge } from '@xyflow/react';
+import { Edge } from '@xyflow/react';
 import { Mindmap, MindmapNode } from '@visualli/shared';
-import { MindmapNodeData } from '../components/CustomNodes';
+import { MindmapCustomNode } from '../components/CustomNodes';
 
 export function getLayoutedElements(
   mindmap: Mindmap,
   selectedNodeId?: string | null,
   onNodeClick?: (node: MindmapNode) => void
-): { nodes: Node<MindmapNodeData>[]; edges: Edge[] } {
+): { nodes: MindmapCustomNode[]; edges: Edge[] } {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
@@ -31,7 +31,7 @@ export function getLayoutedElements(
   dagre.layout(dagreGraph);
 
   // Convert to React Flow Nodes
-  const nodes: Node<MindmapNodeData>[] = mindmap.nodes.map((node) => {
+  const nodes: MindmapCustomNode[] = mindmap.nodes.map((node) => {
     const nodeWithPos = dagreGraph.node(node.id);
     const isRoot = node.id === mindmap.rootId || node.isRoot === true;
 

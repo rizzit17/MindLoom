@@ -5,6 +5,7 @@ import {
   Background,
   BackgroundVariant,
   MiniMap,
+  NodeTypes,
 } from '@xyflow/react';
 import { Mindmap, MindmapNode } from '@visualli/shared';
 import { CustomRootNode, CustomChildNode } from './CustomNodes';
@@ -22,7 +23,7 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
   selectedNodeId,
   onSelectNode,
 }) => {
-  const nodeTypes = useMemo(
+  const nodeTypes: NodeTypes = useMemo(
     () => ({
       rootNode: CustomRootNode,
       childNode: CustomChildNode,
