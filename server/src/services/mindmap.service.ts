@@ -1,12 +1,16 @@
-import { Mindmap } from '@visualli/shared';
+import { Mindmap, MindmapNode, MindmapConnection } from '@visualli/shared';
 import { LlmClient } from './llm/llmClient';
 import { parseAndValidateMindmapOutput } from '../validators/mindmapValidator';
 import { truncateInput } from '../utils/tokenEstimate';
-import { UnprocessableEntityError } from '../middleware/errorHandler';
+import { UnprocessableEntityError, NotFoundError } from '../middleware/errorHandler';
+import { MindmapRepository } from '../repositories/mindmap.repository';
 import { logger } from '../utils/logger';
 
 export class MindmapService {
-  constructor(private llmClient: LlmClient) {}
+  constructor(
+    private llmClient: LlmClient,
+    private repository: MindmapRepository = new MindmapRepository()
+  ) {}
 
   async generateAndValidateMindmap(inputText: string): Promise<Mindmap> {
     // 1. Truncate input if it exceeds character budget
@@ -69,5 +73,57 @@ export class MindmapService {
       'Mindmap generation failed strict domain validation after repair retry.',
       repairValidation.errors
     );
+  }
+
+  async expandNode(mindmapId: string, nodeId: string): Promise<Mindmap> {
+    const mindmap = this.repository.findById(mindmapId);
+    if (!mindmap) {
+      throw new NotFoundError(`Mindmap with ID '${mindmapId}' was not found.`);
+    }
+
+    const targetNode = mindmap.nodes.find((n) => n.id === nodeId);
+    if (!targetNode) {
+      throw new NotFoundError(`Node with ID '${nodeId}' was not found in mindmap.`);
+    }
+
+    logger.info(`Expanding child layer for node '${targetNode.label}' (${nodeId})...`);
+
+    const timestamp = Date.now().toString().slice(-4);
+    const child1Id = `${nodeId}_sub1_${timestamp}`;
+    const child2Id = `${nodeId}_sub2_${timestamp}`;
+
+    const newChild1: MindmapNode = {
+      id: child1Id,
+      label: `${targetNode.label} Deep-Dive`,
+      summary: `Detailed architectural breakdown and component specs for ${targetNode.label}.`,
+    };
+
+    const newChild2: MindmapNode = {
+      id: child2Id,
+      label: `${targetNode.label} Operations`,
+      summary: `Best practices, monitoring metrics, and implementation patterns for ${targetNode.label}.`,
+    };
+
+    const conn1: MindmapConnection = {
+      id: `c_${child1Id}`,
+      from: nodeId,
+      to: child1Id,
+      label: 'deep-dive',
+    };
+
+    const conn2: MindmapConnection = {
+      id: `c_${child2Id}`,
+      from: nodeId,
+      to: child2Id,
+      label: 'operations',
+    };
+
+    const updatedMindmap: Mindmap = {
+      ...mindmap,
+      nodes: [...mindmap.nodes, newChild1, newChild2],
+      connections: [...mindmap.connections, conn1, conn2],
+    };
+
+    return this.repository.update(mindmapId, updatedMindmap);
   }
 }

@@ -3,7 +3,7 @@ import { validateCreateMindmapRequest } from '../validators/requestValidators';
 import { MindmapService } from '../services/mindmap.service';
 import { MindmapRepository } from '../repositories/mindmap.repository';
 import { createLlmClient } from '../services/llm/llmClient';
-import { NotFoundError } from '../middleware/errorHandler';
+import { NotFoundError, BadRequestError } from '../middleware/errorHandler';
 
 export class MindmapsController {
   private service: MindmapService;
@@ -11,8 +11,8 @@ export class MindmapsController {
 
   constructor(service?: MindmapService, repository?: MindmapRepository) {
     const llmClient = createLlmClient();
-    this.service = service || new MindmapService(llmClient);
     this.repository = repository || new MindmapRepository();
+    this.service = service || new MindmapService(llmClient, this.repository);
   }
 
   generateMindmap = async (req: Request, res: Response): Promise<void> => {
@@ -43,5 +43,17 @@ export class MindmapsController {
     }
 
     res.status(200).json(mindmap);
+  };
+
+  expandMindmapNode = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const { nodeId } = req.body;
+
+    if (!nodeId || typeof nodeId !== 'string') {
+      throw new BadRequestError('Request body must specify a valid string "nodeId".');
+    }
+
+    const updatedMindmap = await this.service.expandNode(id, nodeId);
+    res.status(200).json(updatedMindmap);
   };
 }

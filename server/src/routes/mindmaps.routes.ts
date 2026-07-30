@@ -9,6 +9,7 @@ export function createMindmapsRouter(controller?: MindmapsController): Router {
   router.post('/', asyncHandler(mindmapsController.generateMindmap));
   router.get('/', asyncHandler(mindmapsController.getMindmaps));
   router.get('/:id', asyncHandler(mindmapsController.getMindmapById));
+  router.post('/:id/expand', asyncHandler(mindmapsController.expandMindmapNode));
 
   return router;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Tag, ArrowUpRight } from 'lucide-react';
+import { X, Tag, ArrowUpRight, Sparkles, Loader2 } from 'lucide-react';
 import { Mindmap, MindmapNode } from '@visualli/shared';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -8,6 +8,8 @@ interface SummaryPanelProps {
   mindmap: Mindmap | null;
   onClose: () => void;
   onSelectNode: (node: MindmapNode) => void;
+  onExpandNode?: (nodeId: string) => void;
+  isExpanding?: boolean;
 }
 
 export const SummaryPanel: React.FC<SummaryPanelProps> = ({
@@ -15,6 +17,8 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({
   mindmap,
   onClose,
   onSelectNode,
+  onExpandNode,
+  isExpanding = false,
 }) => {
   if (!node || !mindmap) return null;
 
@@ -77,12 +81,33 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({
           <p className="text-xs text-ink leading-relaxed font-mono font-medium">{node.summary}</p>
         </div>
 
+        {/* Drill-down Expansion Action Button */}
+        {onExpandNode && mindmap.id && (
+          <button
+            onClick={() => onExpandNode(node.id)}
+            disabled={isExpanding}
+            className="studio-btn-primary p-2.5 text-xs font-display font-bold uppercase tracking-wider flex items-center justify-center gap-2 w-full disabled:opacity-50"
+          >
+            {isExpanding ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-white" />
+                <span>Drilling Down...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 text-white" />
+                <span>Drill Down & Expand Node</span>
+              </>
+            )}
+          </button>
+        )}
+
         {connectedNodes.length > 0 && (
           <div className="flex flex-col gap-2">
             <span className="text-xs font-semibold text-ink">
               Connected Nodes ({connectedNodes.length})
             </span>
-            <div className="flex flex-col gap-1.5 max-h-52 overflow-y-auto pr-1">
+            <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
               {connectedNodes.map(({ node: relNode, label, direction }, idx) => (
                 <button
                   key={idx}

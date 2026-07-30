@@ -113,6 +113,29 @@ export const AppContent: React.FC = () => {
     },
   });
 
+  // Expand node drill-down mutation
+  const expandMutation = useMutation({
+    mutationFn: ({ mindmapId, nodeId }: { mindmapId: string; nodeId: string }) =>
+      mindmapApi.expandNode(mindmapId, nodeId),
+    onSuccess: (updatedMindmap) => {
+      setCurrentMindmap(updatedMindmap);
+      setToast({
+        id: Date.now().toString(),
+        type: 'info',
+        title: 'Node Layer Expanded',
+        message: 'Successfully generated child deep-dive sub-nodes for selected topic.',
+      });
+    },
+    onError: () => {
+      setToast({
+        id: Date.now().toString(),
+        type: 'error',
+        title: 'Expansion Failed',
+        message: 'Could not expand child layer for selected node.',
+      });
+    },
+  });
+
   const handleSelectHistoryItem = async (id: string) => {
     try {
       const mindmap = await mindmapApi.getMindmapById(id);
@@ -217,6 +240,12 @@ export const AppContent: React.FC = () => {
                   mindmap={currentMindmap}
                   onClose={() => setSelectedNode(null)}
                   onSelectNode={(node) => setSelectedNode(node)}
+                  onExpandNode={(nodeId) => {
+                    if (currentMindmap?.id) {
+                      expandMutation.mutate({ mindmapId: currentMindmap.id, nodeId });
+                    }
+                  }}
+                  isExpanding={expandMutation.isPending}
                 />
               </div>
             )}

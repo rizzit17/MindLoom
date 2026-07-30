@@ -38,6 +38,17 @@ export class MindmapRepository {
     return fullMindmap;
   }
 
+  update(id: string, mindmap: Mindmap): Mindmap {
+    const stmt = this.db.prepare(`
+      UPDATE mindmaps
+      SET title = ?, root_id = ?, data = ?
+      WHERE id = ?
+    `);
+
+    stmt.run(mindmap.title, mindmap.rootId, JSON.stringify(mindmap), id);
+    return mindmap;
+  }
+
   findAll(): MindmapSummaryItem[] {
     const stmt = this.db.prepare(`
       SELECT id, title, created_at

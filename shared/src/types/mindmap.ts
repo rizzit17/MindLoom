@@ -32,6 +32,10 @@ export interface CreateMindmapRequest {
   text: string;
 }
 
+export interface ExpandNodeRequest {
+  nodeId: string;
+}
+
 export interface ApiErrorResponse {
   error: string;
   code?: string;

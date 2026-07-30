@@ -31,4 +31,9 @@ export const mindmapApi = {
     const response = await apiClient.get<Mindmap>(`/mindmaps/${id}`);
     return response.data;
   },
+
+  expandNode: async (mindmapId: string, nodeId: string): Promise<Mindmap> => {
+    const response = await apiClient.post<Mindmap>(`/mindmaps/${mindmapId}/expand`, { nodeId });
+    return response.data;
+  },
 };
