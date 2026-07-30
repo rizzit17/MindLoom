@@ -3,9 +3,11 @@ services:
     name: visualli-mindloom
     env: node
     plan: free
-    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    buildCommand: pnpm install --frozen-lockfile && pnpm rebuild better-sqlite3 && pnpm build
     startCommand: pnpm --filter server start
     envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
       - key: NODE_ENV
         value: production
       - key: MOCK_MODE

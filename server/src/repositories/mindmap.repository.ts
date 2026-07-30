@@ -1,4 +1,3 @@
-import Database from 'better-sqlite3';
 import { v4 as uuidv4 } from 'uuid';
 import { Mindmap, MindmapSummaryItem } from '@visualli/shared';
 import { getDb } from './db';
@@ -12,10 +11,16 @@ interface MindmapRow {
 }
 
 export class MindmapRepository {
-  private db: Database.Database;
+  private db: any;
+  private memoryStore: Map<string, Mindmap> = new Map();
+  private isFallback: boolean = false;
 
-  constructor(customDb?: Database.Database) {
+  constructor(customDb?: any) {
     this.db = customDb || getDb();
+    if (this.db && this.db.isFallback) {
+      this.isFallback = true;
+      this.memoryStore = this.db.store;
+    }
   }
 
   create(mindmap: Mindmap): Mindmap {
@@ -28,6 +33,11 @@ export class MindmapRepository {
       createdAt,
     };
 
+    if (this.isFallback) {
+      this.memoryStore.set(id, fullMindmap);
+      return fullMindmap;
+    }
+
     const stmt = this.db.prepare(`
       INSERT INTO mindmaps (id, title, root_id, data, created_at)
       VALUES (?, ?, ?, ?, ?)
@@ -39,6 +49,11 @@ export class MindmapRepository {
   }
 
   update(id: string, mindmap: Mindmap): Mindmap {
+    if (this.isFallback) {
+      this.memoryStore.set(id, mindmap);
+      return mindmap;
+    }
+
     const stmt = this.db.prepare(`
       UPDATE mindmaps
       SET title = ?, root_id = ?, data = ?
@@ -50,6 +65,16 @@ export class MindmapRepository {
   }
 
   findAll(): MindmapSummaryItem[] {
+    if (this.isFallback) {
+      return Array.from(this.memoryStore.values())
+        .map((m) => ({
+          id: m.id || uuidv4(),
+          title: m.title,
+          createdAt: m.createdAt || new Date().toISOString(),
+        }))
+        .sort((a, b) => (b.createdAt > a.createdAt ? 1 : -1));
+    }
+
     const stmt = this.db.prepare(`
       SELECT id, title, created_at
       FROM mindmaps
@@ -66,6 +91,10 @@ export class MindmapRepository {
   }
 
   findById(id: string): Mindmap | null {
+    if (this.isFallback) {
+      return this.memoryStore.get(id) || null;
+    }
+
     const stmt = this.db.prepare(`
       SELECT id, title, root_id, data, created_at
       FROM mindmaps
@@ -88,6 +117,11 @@ export class MindmapRepository {
   }
 
   deleteAll(): void {
+    if (this.isFallback) {
+      this.memoryStore.clear();
+      return;
+    }
+
     const stmt = this.db.prepare(`DELETE FROM mindmaps`);
     stmt.run();
   }
