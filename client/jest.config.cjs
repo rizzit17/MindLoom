@@ -6,6 +6,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   moduleNameMapper: {
     '^@visualli/shared$': '<rootDir>/../shared/src',
+    '^pdfjs-dist$': '<rootDir>/src/__mocks__/pdfjsMock.js',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
   transform: {
