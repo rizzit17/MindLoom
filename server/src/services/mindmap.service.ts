@@ -91,31 +91,92 @@ export class MindmapService {
     const timestamp = Date.now().toString().slice(-4);
     const child1Id = `${nodeId}_sub1_${timestamp}`;
     const child2Id = `${nodeId}_sub2_${timestamp}`;
+    const labelLower = targetNode.label.toLowerCase();
 
-    const newChild1: MindmapNode = {
-      id: child1Id,
-      label: `${targetNode.label} Deep-Dive`,
-      summary: `Detailed architectural breakdown and component specs for ${targetNode.label}.`,
-    };
+    let newChild1: MindmapNode;
+    let newChild2: MindmapNode;
+    let conn1Label = 'sub-topic';
+    let conn2Label = 'sub-topic';
 
-    const newChild2: MindmapNode = {
-      id: child2Id,
-      label: `${targetNode.label} Operations`,
-      summary: `Best practices, monitoring metrics, and implementation patterns for ${targetNode.label}.`,
-    };
+    if (labelLower.includes('service model') || labelLower.includes('models')) {
+      newChild1 = {
+        id: child1Id,
+        label: 'IaaS & PaaS Layers',
+        summary: 'Infrastructure as a Service (virtual servers/storage) and Platform as a Service (development runtime environment).',
+      };
+      newChild2 = {
+        id: child2Id,
+        label: 'SaaS Applications',
+        summary: 'Software as a Service delivering end-user web applications fully managed in the cloud.',
+      };
+      conn1Label = 'infrastructure';
+      conn2Label = 'applications';
+    } else if (labelLower.includes('provider') || labelLower.includes('aws') || labelLower.includes('azure')) {
+      newChild1 = {
+        id: child1Id,
+        label: 'AWS & Microsoft Azure',
+        summary: 'Market leaders providing global data centers, scalable virtual computing, and enterprise Active Directory integration.',
+      };
+      newChild2 = {
+        id: child2Id,
+        label: 'Google Cloud (GCP)',
+        summary: 'Hyperscale cloud provider specializing in big data analytics, Kubernetes container management, and AI workloads.',
+      };
+      conn1Label = 'enterprise market';
+      conn2Label = 'analytics & AI';
+    } else if (labelLower.includes('benefit') || labelLower.includes('advantage')) {
+      newChild1 = {
+        id: child1Id,
+        label: 'Elastic Scalability',
+        summary: 'Instant auto-scaling of compute and memory capacity matching real-time user traffic spikes.',
+      };
+      newChild2 = {
+        id: child2Id,
+        label: 'Cost & Disaster Recovery',
+        summary: 'Pay-as-you-go operational expense model with automated cross-region backup and 99.99% availability.',
+      };
+      conn1Label = 'performance';
+      conn2Label = 'financial & uptime';
+    } else if (labelLower.includes('challenge') || labelLower.includes('consideration') || labelLower.includes('risk')) {
+      newChild1 = {
+        id: child1Id,
+        label: 'Cybersecurity & Compliance',
+        summary: 'Ensuring data encryption at rest/transit, regulatory compliance (SOC2/GDPR), and identity management.',
+      };
+      newChild2 = {
+        id: child2Id,
+        label: 'Vendor Lock-in Mitigation',
+        summary: 'Avoiding proprietary cloud API dependencies by leveraging open container standards like Docker and Kubernetes.',
+      };
+      conn1Label = 'governance';
+      conn2Label = 'architecture';
+    } else {
+      newChild1 = {
+        id: child1Id,
+        label: `${targetNode.label} Specifications`,
+        summary: `Detailed technical architecture, core requirements, and structural components of ${targetNode.label}.`,
+      };
+      newChild2 = {
+        id: child2Id,
+        label: `${targetNode.label} Operations`,
+        summary: `Operational workflows, monitoring metrics, best practices, and integration patterns for ${targetNode.label}.`,
+      };
+      conn1Label = 'specifications';
+      conn2Label = 'implementation';
+    }
 
     const conn1: MindmapConnection = {
       id: `c_${child1Id}`,
       from: nodeId,
       to: child1Id,
-      label: 'deep-dive',
+      label: conn1Label,
     };
 
     const conn2: MindmapConnection = {
       id: `c_${child2Id}`,
       from: nodeId,
       to: child2Id,
-      label: 'operations',
+      label: conn2Label,
     };
 
     const updatedMindmap: Mindmap = {

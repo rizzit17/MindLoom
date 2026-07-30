@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ReactFlow,
   Controls,
@@ -10,7 +10,7 @@ import {
 import { Mindmap, MindmapNode } from '@visualli/shared';
 import { CustomRootNode, CustomChildNode } from './CustomNodes';
 import { getLayoutedElements } from '../utils/layout';
-import { Network } from 'lucide-react';
+import { Network, LayoutList, MoveHorizontal } from 'lucide-react';
 
 interface MindmapCanvasProps {
   mindmap: Mindmap | null;
@@ -23,6 +23,8 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
   selectedNodeId,
   onSelectNode,
 }) => {
+  const [direction, setDirection] = useState<'LR' | 'TB'>('LR');
+
   const nodeTypes: NodeTypes = useMemo(
     () => ({
       rootNode: CustomRootNode,
@@ -33,8 +35,8 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
 
   const { nodes, edges } = useMemo(() => {
     if (!mindmap) return { nodes: [], edges: [] };
-    return getLayoutedElements(mindmap, selectedNodeId, onSelectNode);
-  }, [mindmap, selectedNodeId, onSelectNode]);
+    return getLayoutedElements(mindmap, selectedNodeId, onSelectNode, direction);
+  }, [mindmap, selectedNodeId, onSelectNode, direction]);
 
   if (!mindmap) {
     return (
@@ -59,16 +61,37 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
 
   return (
     <div className="w-full h-full min-h-[500px] bg-surface border-[1.5px] border-border shadow-[3px_3px_0px_var(--border)] rounded-[4px] relative overflow-hidden font-mono">
-      <div className="absolute top-4 left-4 z-10 bg-surface border-[1.5px] border-border px-3 py-1.5 shadow-[2px_2px_0px_var(--border)] rounded-[4px] flex items-center gap-2">
-        <div className="w-2.5 h-2.5 bg-accent rounded-full" />
-        <div>
-          <h3 className="text-xs font-display font-bold text-ink tracking-tight">
-            {mindmap.title}
-          </h3>
-          <p className="text-[10px] text-ink/60 font-mono">
-            {mindmap.nodes.length} nodes • Auto Layout
-          </p>
+      <div className="absolute top-4 left-4 z-10 bg-surface border-[1.5px] border-border px-3 py-1.5 shadow-[2px_2px_0px_var(--border)] rounded-[4px] flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 bg-accent rounded-full" />
+          <div>
+            <h3 className="text-xs font-display font-bold text-ink tracking-tight">
+              {mindmap.title}
+            </h3>
+            <p className="text-[10px] text-ink/60 font-mono">
+              {mindmap.nodes.length} nodes • {direction === 'LR' ? 'Horizontal Tree' : 'Vertical Hierarchy'}
+            </p>
+          </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setDirection((prev) => (prev === 'LR' ? 'TB' : 'LR'))}
+          className="studio-btn px-2 py-1 text-[11px] font-mono flex items-center gap-1.5 text-ink hover:border-accent"
+          title="Toggle between Horizontal Radial Layout and Vertical Hierarchy"
+        >
+          {direction === 'LR' ? (
+            <>
+              <MoveHorizontal className="w-3 h-3 text-accent" />
+              <span>Horizontal View</span>
+            </>
+          ) : (
+            <>
+              <LayoutList className="w-3 h-3 text-accent" />
+              <span>Vertical View</span>
+            </>
+          )}
+        </button>
       </div>
 
       <ReactFlow

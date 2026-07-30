@@ -6,16 +6,21 @@ import { MindmapCustomNode } from '../components/CustomNodes';
 export function getLayoutedElements(
   mindmap: Mindmap,
   selectedNodeId?: string | null,
-  onNodeClick?: (node: MindmapNode) => void
+  onNodeClick?: (node: MindmapNode) => void,
+  direction: 'LR' | 'TB' = 'LR'
 ): { nodes: MindmapCustomNode[]; edges: Edge[] } {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  // Direction: TB (Top-to-Bottom)
-  dagreGraph.setGraph({ rankdir: 'TB', ranksep: 85, nodesep: 65 });
+  // Default to Left-to-Right layout for clean visual Mindmap horizontal branching
+  dagreGraph.setGraph({
+    rankdir: direction,
+    ranksep: direction === 'LR' ? 140 : 100,
+    nodesep: direction === 'LR' ? 45 : 70,
+  });
 
-  const nodeWidth = 230;
-  const nodeHeight = 80;
+  const nodeWidth = 240;
+  const nodeHeight = 85;
 
   // Add nodes to Dagre
   mindmap.nodes.forEach((node) => {
