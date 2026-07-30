@@ -6,6 +6,45 @@ interface InputPanelProps {
   isLoading: boolean;
 }
 
+/**
+ * Fallback raw PDF text extractor if worker instantiation or CDN fails
+ */
+function extractRawPdfText(arrayBuffer: ArrayBuffer): string {
+  try {
+    const decoder = new TextDecoder('latin1');
+    const rawStr = decoder.decode(new Uint8Array(arrayBuffer));
+    const textPieces: string[] = [];
+
+    // Extract text from PDF Tj and TJ string operators
+    const tjRegex = /\(([^()]{2,})\)\s*T[jJ]/g;
+    let match;
+    while ((match = tjRegex.exec(rawStr)) !== null) {
+      const clean = match[1].replace(/\\([()])/g, '$1').trim();
+      if (clean.length > 1 && !/^\d+$/.test(clean)) {
+        textPieces.push(clean);
+      }
+    }
+
+    // Extract text from PDF TJ array operators e.g. [(text) 10 (more)] TJ
+    const tjArrayRegex = /\[\s*((?:\([^()]*\)\s*-?\d*\s*)+)\]\s*TJ/g;
+    while ((match = tjArrayRegex.exec(rawStr)) !== null) {
+      const innerTjRegex = /\(([^()]+)\)/g;
+      let innerMatch;
+      while ((innerMatch = innerTjRegex.exec(match[1])) !== null) {
+        const clean = innerMatch[1].replace(/\\([()])/g, '$1').trim();
+        if (clean.length > 1) {
+          textPieces.push(clean);
+        }
+      }
+    }
+
+    return textPieces.join(' ');
+  } catch (err) {
+    console.error('Raw PDF fallback extraction error:', err);
+    return '';
+  }
+}
+
 export const InputPanel: React.FC<InputPanelProps> = ({ onGenerate, isLoading }) => {
   const [text, setText] = useState('');
   const [fileName, setFileName] = useState<string | null>(null);
@@ -27,42 +66,53 @@ export const InputPanel: React.FC<InputPanelProps> = ({ onGenerate, isLoading })
     try {
       let extractedText = '';
 
-      if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-        const pdfjsLib = await import('pdfjs-dist');
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
-
+      if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
         const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        let pageTexts: string[] = [];
 
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const textContent = await page.getTextContent();
-          const pageText = textContent.items
-            .map((item: any) => ('str' in item ? item.str : ''))
-            .filter(Boolean)
-            .join(' ');
-          if (pageText.trim()) {
-            pageTexts.push(pageText);
+        try {
+          const pdfjsLib = await import('pdfjs-dist');
+          // Use unpkg CDN which reliably mirrors all npm versions of pdfjs-dist
+          pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
+          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          let pageTexts: string[] = [];
+
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items
+              .map((item: any) => ('str' in item ? item.str : ''))
+              .filter(Boolean)
+              .join(' ');
+            if (pageText.trim()) {
+              pageTexts.push(pageText);
+            }
           }
+          extractedText = pageTexts.join('\n\n');
+        } catch (pdfJsErr) {
+          console.warn('pdfjs-dist worker failed, falling back to raw stream text extractor:', pdfJsErr);
+          extractedText = extractRawPdfText(arrayBuffer);
         }
-        extractedText = pageTexts.join('\n\n');
+
+        // Second fallback if pdfjs yielded empty string (e.g. embedded text stream format)
+        if (!extractedText.trim()) {
+          extractedText = extractRawPdfText(arrayBuffer);
+        }
       } else {
         // Plain text, Markdown, CSV, JSON, Log, etc.
         extractedText = await file.text();
-        // Clean non-printable characters for raw document binary imports if any
         extractedText = extractedText.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '');
       }
 
       if (extractedText.trim()) {
         setText(extractedText.trim());
       } else {
-        alert('Could not extract readable text from the uploaded file.');
+        alert(`Could not extract text from '${file.name}'. Please paste your document text directly into the input box.`);
         setFileName(null);
       }
     } catch (error) {
       console.error('Failed to parse file text:', error);
-      alert(`Error reading file '${file.name}'. Please ensure it contains unencrypted text or standard PDF pages.`);
+      alert(`Error reading file '${file.name}'. Please ensure it is a valid document file.`);
       setFileName(null);
     } finally {
       setIsExtracting(false);
