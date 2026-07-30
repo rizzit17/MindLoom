@@ -63,7 +63,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({ onGenerate, isLoading })
             onChange={(e) => setText(e.target.value)}
             disabled={isLoading}
             placeholder="Paste your document, notes, or article text here to generate an interactive mindmap..."
-            className="w-full h-36 p-3.5 border-[1.5px] border-border bg-bg text-ink placeholder-ink/40 focus:outline-none focus:ring-2 focus:ring-accent transition-all resize-none text-xs leading-relaxed font-mono rounded-[4px]"
+            className="w-full h-36 p-3.5 border-[1.5px] border-border bg-white dark:bg-[#121215] text-zinc-950 dark:text-zinc-50 placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-accent transition-all resize-none text-xs font-semibold leading-relaxed font-mono rounded-[4px]"
           />
           {isTruncated && (
             <div className="absolute bottom-3 right-3 flex items-center gap-1.5 text-xs bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded-[3px] font-medium">
