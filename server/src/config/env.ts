@@ -13,7 +13,10 @@ const envSchema = z.object({
     .string()
     .optional()
     .transform((val) => val === 'true' || val === '1'),
+  GROQ_API_KEY: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
+  OPENAI_BASE_URL: z.string().optional(),
+  LLM_MODEL: z.string().optional(),
   DATABASE_PATH: z.string().default('./data/mindmaps.db'),
   MAX_INPUT_CHARS: z.number().default(12000),
 });
