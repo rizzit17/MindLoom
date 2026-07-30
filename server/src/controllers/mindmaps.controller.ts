@@ -6,26 +6,27 @@ import { createLlmClient } from '../services/llm/llmClient';
 import { NotFoundError, BadRequestError } from '../middleware/errorHandler';
 
 export class MindmapsController {
-  private service: MindmapService;
   private repository: MindmapRepository;
 
-  constructor(service?: MindmapService, repository?: MindmapRepository) {
-    const llmClient = createLlmClient();
+  constructor(repository?: MindmapRepository) {
     this.repository = repository || new MindmapRepository();
-    this.service = service || new MindmapService(llmClient, this.repository);
   }
 
   generateMindmap = async (req: Request, res: Response): Promise<void> => {
     // 1. Validate inbound request body shape & edge cases (empty / too short)
     const { text } = validateCreateMindmapRequest(req.body);
 
-    // 2. Generate and validate mindmap via service
-    const generatedMindmap = await this.service.generateAndValidateMindmap(text);
+    // 2. Instantiate LLM Client & Service dynamically per request
+    const llmClient = createLlmClient();
+    const service = new MindmapService(llmClient, this.repository);
 
-    // 3. Persist to SQLite
+    // 3. Generate and validate mindmap via service
+    const generatedMindmap = await service.generateAndValidateMindmap(text);
+
+    // 4. Persist to SQLite
     const savedMindmap = this.repository.create(generatedMindmap);
 
-    // 4. Return 201 Created
+    // 5. Return 201 Created
     res.status(201).json(savedMindmap);
   };
 
@@ -53,7 +54,10 @@ export class MindmapsController {
       throw new BadRequestError('Request body must specify a valid string "nodeId".');
     }
 
-    const updatedMindmap = await this.service.expandNode(id, nodeId);
+    const llmClient = createLlmClient();
+    const service = new MindmapService(llmClient, this.repository);
+
+    const updatedMindmap = await service.expandNode(id, nodeId);
     res.status(200).json(updatedMindmap);
   };
 }

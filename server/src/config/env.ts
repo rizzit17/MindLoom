@@ -2,10 +2,6 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { z } from 'zod';
 
-// Load .env from root or server directory
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
-dotenv.config();
-
 const envSchema = z.object({
   PORT: z.string().default('3001').transform((val) => parseInt(val, 10)),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -21,11 +17,15 @@ const envSchema = z.object({
   MAX_INPUT_CHARS: z.number().default(12000),
 });
 
-const _env = envSchema.safeParse(process.env);
-
-if (!_env.success) {
-  console.error('❌ Invalid environment variables:', _env.error.format());
-  throw new Error('Invalid environment configuration');
+export function getEnvConfig() {
+  dotenv.config({ path: path.resolve(__dirname, '../../.env'), override: true });
+  dotenv.config({ override: true });
+  const _env = envSchema.safeParse(process.env);
+  if (!_env.success) {
+    console.error('❌ Invalid environment variables:', _env.error.format());
+    throw new Error('Invalid environment configuration');
+  }
+  return _env.data;
 }
 
-export const config = _env.data;
+export const config = getEnvConfig();

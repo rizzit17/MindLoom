@@ -1,4 +1,4 @@
-import { config } from '../../config/env';
+import { getEnvConfig } from '../../config/env';
 import { logger } from '../../utils/logger';
 import { MockProvider } from './mockProvider';
 import { OpenAiProvider } from './openaiProvider';
@@ -13,23 +13,24 @@ export interface LlmClient {
 }
 
 export function createLlmClient(overrideMock?: boolean): LlmClient {
-  const isMock = overrideMock !== undefined ? overrideMock : config.MOCK_MODE;
+  const envConfig = getEnvConfig();
+  const isMock = overrideMock !== undefined ? overrideMock : envConfig.MOCK_MODE;
 
-  if (!isMock && config.GROQ_API_KEY) {
-    logger.info(`Using Groq LLM Provider (${config.LLM_MODEL || 'llama-3.3-70b-versatile'})`);
+  if (!isMock && envConfig.GROQ_API_KEY) {
+    logger.info(`Using Groq LLM Provider (${envConfig.LLM_MODEL || 'llama-3.3-70b-versatile'})`);
     return new OpenAiProvider(
-      config.GROQ_API_KEY,
+      envConfig.GROQ_API_KEY,
       'https://api.groq.com/openai/v1',
-      config.LLM_MODEL || 'llama-3.3-70b-versatile'
+      envConfig.LLM_MODEL || 'llama-3.3-70b-versatile'
     );
   }
 
-  if (!isMock && config.OPENAI_API_KEY) {
-    logger.info(`Using OpenAI LLM Provider (${config.LLM_MODEL || 'gpt-4o-mini'})`);
+  if (!isMock && envConfig.OPENAI_API_KEY) {
+    logger.info(`Using OpenAI LLM Provider (${envConfig.LLM_MODEL || 'gpt-4o-mini'})`);
     return new OpenAiProvider(
-      config.OPENAI_API_KEY,
-      config.OPENAI_BASE_URL,
-      config.LLM_MODEL || 'gpt-4o-mini'
+      envConfig.OPENAI_API_KEY,
+      envConfig.OPENAI_BASE_URL,
+      envConfig.LLM_MODEL || 'gpt-4o-mini'
     );
   }
 
