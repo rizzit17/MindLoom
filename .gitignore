@@ -3,7 +3,9 @@ dist
 build
 coverage
 .env
+server/.env
 *.db
 *.db-journal
-.DS_Store
+*.db-shm
+*.db-wal
 visualli-mini-mindmap
