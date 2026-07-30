@@ -123,7 +123,7 @@ export const AppContent: React.FC = () => {
           id: Date.now().toString(),
           type: 'error',
           title: 'Connection Error',
-          message: 'Unable to reach backend API. Please ensure the server is running on http://localhost:3001',
+          message: 'Unable to reach backend API. Please verify network connection or server status.',
         });
       }
     },
