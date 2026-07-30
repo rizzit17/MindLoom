@@ -41,12 +41,12 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Build Shared & Workspace Packages
+        env:
+          MOCK_MODE: "true"
+        run: pnpm build
+
       - name: Run Monorepo Tests
         env:
           MOCK_MODE: "true"
         run: pnpm test
-
-      - name: Build Monorepo Workspaces
-        env:
-          MOCK_MODE: "true"
-        run: pnpm build

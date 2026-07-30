@@ -81,7 +81,7 @@ export class MindmapService {
       throw new NotFoundError(`Mindmap with ID '${mindmapId}' was not found.`);
     }
 
-    const targetNode = mindmap.nodes.find((n) => n.id === nodeId);
+    const targetNode = mindmap.nodes.find((n: MindmapNode) => n.id === nodeId);
     if (!targetNode) {
       throw new NotFoundError(`Node with ID '${nodeId}' was not found in mindmap.`);
     }
