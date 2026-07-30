@@ -9,7 +9,12 @@ const envSchema = z.object({
   MOCK_MODE: z
     .union([z.boolean(), z.string()])
     .optional()
-    .transform((val) => val === true || val === 'true' || val === '1'),
+    .transform((val) => {
+      if (val === true || val === 'true' || val === '1') return true;
+      if (val === false || val === 'false' || val === '0') return false;
+      // If process.env.MOCK_MODE is not explicitly set, default to true for safe CI/offline execution
+      return process.env.MOCK_MODE !== 'false';
+    }),
   GROQ_API_KEY: z.string().optional(),
   OPENAI_API_KEY: z.string().optional(),
   OPENAI_BASE_URL: z.string().optional(),

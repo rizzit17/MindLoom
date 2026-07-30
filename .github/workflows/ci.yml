@@ -42,7 +42,11 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       - name: Run Monorepo Tests
+        env:
+          MOCK_MODE: "true"
         run: pnpm test
 
       - name: Build Monorepo Workspaces
-        run: pnpm --filter client build && pnpm --filter server build
+        env:
+          MOCK_MODE: "true"
+        run: pnpm build
