@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   ReactFlow,
   Controls,
@@ -6,6 +6,8 @@ import {
   BackgroundVariant,
   MiniMap,
   NodeTypes,
+  ReactFlowProvider,
+  useReactFlow,
 } from '@xyflow/react';
 import { Mindmap, MindmapNode } from '@visualli/shared';
 import { CustomRootNode, CustomChildNode } from './CustomNodes';
@@ -18,12 +20,14 @@ interface MindmapCanvasProps {
   onSelectNode: (node: MindmapNode) => void;
 }
 
-export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
-  mindmap,
-  selectedNodeId,
-  onSelectNode,
-}) => {
-  const [direction, setDirection] = useState<'LR' | 'TB'>('LR');
+const MindmapFlowInner: React.FC<{
+  mindmap: Mindmap;
+  selectedNodeId: string | null;
+  onSelectNode: (node: MindmapNode) => void;
+  direction: 'LR' | 'TB';
+  onToggleDirection: () => void;
+}> = ({ mindmap, selectedNodeId, onSelectNode, direction, onToggleDirection }) => {
+  const { fitView } = useReactFlow();
 
   const nodeTypes: NodeTypes = useMemo(
     () => ({
@@ -34,9 +38,83 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
   );
 
   const { nodes, edges } = useMemo(() => {
-    if (!mindmap) return { nodes: [], edges: [] };
     return getLayoutedElements(mindmap, selectedNodeId, onSelectNode, direction);
   }, [mindmap, selectedNodeId, onSelectNode, direction]);
+
+  // Smoothly auto-fit view whenever nodes are added/expanded or layout changes
+  useEffect(() => {
+    if (nodes.length > 0) {
+      const timer = setTimeout(() => {
+        fitView({ padding: 0.2, duration: 350 });
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [nodes.length, direction, fitView]);
+
+  return (
+    <div className="w-full h-full min-h-[500px] bg-surface border-[1.5px] border-border shadow-[3px_3px_0px_var(--border)] rounded-[4px] relative overflow-hidden font-mono">
+      <div className="absolute top-4 left-4 z-10 bg-surface border-[1.5px] border-border px-3 py-1.5 shadow-[2px_2px_0px_var(--border)] rounded-[4px] flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 bg-accent rounded-full animate-pulse" />
+          <div>
+            <h3 className="text-xs font-display font-bold text-ink tracking-tight">
+              {mindmap.title}
+            </h3>
+            <p className="text-[10px] text-ink/60 font-mono">
+              {mindmap.nodes.length} nodes • {direction === 'LR' ? 'Horizontal Tree' : 'Vertical Hierarchy'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onToggleDirection}
+          className="studio-btn px-2 py-1 text-[11px] font-mono flex items-center gap-1.5 text-ink hover:border-accent"
+          title="Toggle between Horizontal Radial Layout and Vertical Hierarchy"
+        >
+          {direction === 'LR' ? (
+            <>
+              <MoveHorizontal className="w-3 h-3 text-accent" />
+              <span>Horizontal View</span>
+            </>
+          ) : (
+            <>
+              <LayoutList className="w-3 h-3 text-accent" />
+              <span>Vertical View</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        fitView
+        fitViewOptions={{ padding: 0.2 }}
+        minZoom={0.15}
+        maxZoom={1.5}
+        defaultEdgeOptions={{ type: 'smoothstep' }}
+        proOptions={{ hideAttribution: true }}
+      >
+        <Controls className="!bg-surface !border-[1.5px] !border-border !shadow-[2px_2px_0px_var(--border)] !rounded-[4px]" />
+        <Background variant={BackgroundVariant.Dots} gap={24} size={1.5} color="var(--border)" />
+        <MiniMap
+          nodeColor={(n) => (n.type === 'rootNode' ? '#E8734A' : 'var(--surface)')}
+          maskColor="rgba(0, 0, 0, 0.3)"
+          className="!bg-surface !border-[1.5px] !border-border !shadow-[3px_3px_0px_var(--border)] !rounded-[4px]"
+        />
+      </ReactFlow>
+    </div>
+  );
+};
+
+export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
+  mindmap,
+  selectedNodeId,
+  onSelectNode,
+}) => {
+  const [direction, setDirection] = useState<'LR' | 'TB'>('LR');
 
   if (!mindmap) {
     return (
@@ -60,59 +138,14 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
   }
 
   return (
-    <div className="w-full h-full min-h-[500px] bg-surface border-[1.5px] border-border shadow-[3px_3px_0px_var(--border)] rounded-[4px] relative overflow-hidden font-mono">
-      <div className="absolute top-4 left-4 z-10 bg-surface border-[1.5px] border-border px-3 py-1.5 shadow-[2px_2px_0px_var(--border)] rounded-[4px] flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 bg-accent rounded-full" />
-          <div>
-            <h3 className="text-xs font-display font-bold text-ink tracking-tight">
-              {mindmap.title}
-            </h3>
-            <p className="text-[10px] text-ink/60 font-mono">
-              {mindmap.nodes.length} nodes • {direction === 'LR' ? 'Horizontal Tree' : 'Vertical Hierarchy'}
-            </p>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setDirection((prev) => (prev === 'LR' ? 'TB' : 'LR'))}
-          className="studio-btn px-2 py-1 text-[11px] font-mono flex items-center gap-1.5 text-ink hover:border-accent"
-          title="Toggle between Horizontal Radial Layout and Vertical Hierarchy"
-        >
-          {direction === 'LR' ? (
-            <>
-              <MoveHorizontal className="w-3 h-3 text-accent" />
-              <span>Horizontal View</span>
-            </>
-          ) : (
-            <>
-              <LayoutList className="w-3 h-3 text-accent" />
-              <span>Vertical View</span>
-            </>
-          )}
-        </button>
-      </div>
-
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        fitView
-        fitViewOptions={{ padding: 0.25 }}
-        minZoom={0.2}
-        maxZoom={1.5}
-        defaultEdgeOptions={{ type: 'smoothstep' }}
-        proOptions={{ hideAttribution: true }}
-      >
-        <Controls className="!bg-surface !border-[1.5px] !border-border !shadow-[2px_2px_0px_var(--border)] !rounded-[4px]" />
-        <Background variant={BackgroundVariant.Dots} gap={24} size={1.5} color="var(--border)" />
-        <MiniMap
-          nodeColor={(n) => (n.type === 'rootNode' ? '#E8734A' : 'var(--surface)')}
-          maskColor="rgba(0, 0, 0, 0.3)"
-          className="!bg-surface !border-[1.5px] !border-border !shadow-[3px_3px_0px_var(--border)] !rounded-[4px]"
-        />
-      </ReactFlow>
-    </div>
+    <ReactFlowProvider>
+      <MindmapFlowInner
+        mindmap={mindmap}
+        selectedNodeId={selectedNodeId}
+        onSelectNode={onSelectNode}
+        direction={direction}
+        onToggleDirection={() => setDirection((prev) => (prev === 'LR' ? 'TB' : 'LR'))}
+      />
+    </ReactFlowProvider>
   );
 };

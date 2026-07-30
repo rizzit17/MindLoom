@@ -92,17 +92,58 @@ export class MindmapService {
     const child1Id = `${nodeId}_sub1_${timestamp}`;
     const child2Id = `${nodeId}_sub2_${timestamp}`;
     const labelLower = targetNode.label.toLowerCase();
+    const summaryText = targetNode.summary || '';
 
     let newChild1: MindmapNode;
     let newChild2: MindmapNode;
     let conn1Label = 'sub-topic';
     let conn2Label = 'sub-topic';
 
-    if (labelLower.includes('service model') || labelLower.includes('models')) {
+    // Domain-aware sub-node generation based on node context
+    if (labelLower.includes('risk') || labelLower.includes('assessment')) {
+      newChild1 = {
+        id: child1Id,
+        label: `${targetNode.label} Analysis`,
+        summary: `Evaluating impact severity, probability, and detectability parameters for ${targetNode.label}.`,
+      };
+      newChild2 = {
+        id: child2Id,
+        label: 'Mitigation & Control',
+        summary: `Establishing corrective actions, preventive controls, and risk monitoring protocols.`,
+      };
+      conn1Label = 'evaluates';
+      conn2Label = 'mitigates';
+    } else if (labelLower.includes('complaint') || labelLower.includes('investigation')) {
+      newChild1 = {
+        id: child1Id,
+        label: 'Root Cause Identification',
+        summary: 'Investigating underlying failure modes and operational deviations causing complaints.',
+      };
+      newChild2 = {
+        id: child2Id,
+        label: 'Corrective Actions (CAPA)',
+        summary: 'Implementing documented corrective measures and preventive workflows to eliminate recurrence.',
+      };
+      conn1Label = 'identifies';
+      conn2Label = 'resolves';
+    } else if (labelLower.includes('good manufacturing') || labelLower.includes('gmp') || labelLower.includes('procedure')) {
+      newChild1 = {
+        id: child1Id,
+        label: 'Production & Quality Control',
+        summary: 'Standardized operational procedures for consistent batch manufacturing and testing.',
+      };
+      newChild2 = {
+        id: child2Id,
+        label: 'Documentation & Audit Trails',
+        summary: 'Maintaining immutable logs, batch records, and regulatory compliance evidence.',
+      };
+      conn1Label = 'standardizes';
+      conn2Label = 'verifies';
+    } else if (labelLower.includes('service model') || labelLower.includes('models')) {
       newChild1 = {
         id: child1Id,
         label: 'IaaS & PaaS Layers',
-        summary: 'Infrastructure as a Service (virtual servers/storage) and Platform as a Service (development runtime environment).',
+        summary: 'Infrastructure as a Service (virtual servers/storage) and Platform as a Service (runtime environment).',
       };
       newChild2 = {
         id: child2Id,
@@ -111,58 +152,24 @@ export class MindmapService {
       };
       conn1Label = 'infrastructure';
       conn2Label = 'applications';
-    } else if (labelLower.includes('provider') || labelLower.includes('aws') || labelLower.includes('azure')) {
-      newChild1 = {
-        id: child1Id,
-        label: 'AWS & Microsoft Azure',
-        summary: 'Market leaders providing global data centers, scalable virtual computing, and enterprise Active Directory integration.',
-      };
-      newChild2 = {
-        id: child2Id,
-        label: 'Google Cloud (GCP)',
-        summary: 'Hyperscale cloud provider specializing in big data analytics, Kubernetes container management, and AI workloads.',
-      };
-      conn1Label = 'enterprise market';
-      conn2Label = 'analytics & AI';
-    } else if (labelLower.includes('benefit') || labelLower.includes('advantage')) {
-      newChild1 = {
-        id: child1Id,
-        label: 'Elastic Scalability',
-        summary: 'Instant auto-scaling of compute and memory capacity matching real-time user traffic spikes.',
-      };
-      newChild2 = {
-        id: child2Id,
-        label: 'Cost & Disaster Recovery',
-        summary: 'Pay-as-you-go operational expense model with automated cross-region backup and 99.99% availability.',
-      };
-      conn1Label = 'performance';
-      conn2Label = 'financial & uptime';
-    } else if (labelLower.includes('challenge') || labelLower.includes('consideration') || labelLower.includes('risk')) {
-      newChild1 = {
-        id: child1Id,
-        label: 'Cybersecurity & Compliance',
-        summary: 'Ensuring data encryption at rest/transit, regulatory compliance (SOC2/GDPR), and identity management.',
-      };
-      newChild2 = {
-        id: child2Id,
-        label: 'Vendor Lock-in Mitigation',
-        summary: 'Avoiding proprietary cloud API dependencies by leveraging open container standards like Docker and Kubernetes.',
-      };
-      conn1Label = 'governance';
-      conn2Label = 'architecture';
     } else {
+      // General dynamic extraction from summary or label
+      const words = summaryText.split(/[\s,.;:]+/).filter((w) => w.length > 3);
+      const keyTopic1 = words[0] ? `${words[0].charAt(0).toUpperCase() + words[0].slice(1)} Details` : `${targetNode.label} Specs`;
+      const keyTopic2 = words[3] ? `${words[3].charAt(0).toUpperCase() + words[3].slice(1)} Execution` : `${targetNode.label} Execution`;
+
       newChild1 = {
         id: child1Id,
-        label: `${targetNode.label} Specifications`,
-        summary: `Detailed technical architecture, core requirements, and structural components of ${targetNode.label}.`,
+        label: keyTopic1,
+        summary: `Core breakdown and structural parameters for ${targetNode.label}.`,
       };
       newChild2 = {
         id: child2Id,
-        label: `${targetNode.label} Operations`,
-        summary: `Operational workflows, monitoring metrics, best practices, and integration patterns for ${targetNode.label}.`,
+        label: keyTopic2,
+        summary: `Implementation patterns, best practices, and operational workflows for ${targetNode.label}.`,
       };
-      conn1Label = 'specifications';
-      conn2Label = 'implementation';
+      conn1Label = 'breakdown';
+      conn2Label = 'execution';
     }
 
     const conn1: MindmapConnection = {
