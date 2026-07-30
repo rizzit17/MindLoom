@@ -1,0 +1,144 @@
+# Visualli Mini Mindmap 🧠✨
+
+> A production-quality, full-stack application that transforms raw input text into interactive node-link mindmaps powered by structured LLM outputs, strict Zod + domain-rule validation, automatic repair-retry cycles, and React Flow visualization.
+
+---
+
+## 🏛 Architecture Overview
+
+Visualli Mini Mindmap treats all LLM outputs as untrusted input. Malformed responses trigger an automated repair flow with itemized error descriptions before persisting or serving data to the client.
+
+```
+┌─────────────────┐       POST /api/mindmaps       ┌───────────────────────────┐
+│                 │ ─────────────────────────────> │ Express API Controller    │
+│  React Client   │                                └─────────────┬─────────────┘
+│ (React Flow +   │                                              │
+│  React Query)   │ <───────────────────────────── ┌─────────────▼─────────────┐
+└─────────────────┘       201 Created Mindmap      │ Mindmap Service           │
+                                                   └─────────────┬─────────────┘
+                                                                 │
+                                                   ┌─────────────▼─────────────┐
+                                                   │ LLM Provider Factory      │
+                                                   │ (OpenAI / MockProvider)   │
+                                                   └─────────────┬─────────────┘
+                                                                 │
+                                                   ┌─────────────▼─────────────┐
+                                                   │ Domain Rules & Zod        │
+                                                   │ Validation (5-9 nodes,    │
+                                                   │ non-dangling connections) │
+                                                   └───────────────────────────┘
+```
+
+---
+
+## 📦 Features
+
+- **Strict Validation Engine**:
+  - Validates JSON structure via Zod schema (`shared/src/schemas/mindmap.schema.ts`).
+  - Validates domain rules via `mindmapValidator.ts`:
+    - Exactly 5 to 9 nodes.
+    - Exactly 1 root node with non-empty label.
+    - Unique node IDs (`n1`, `n2`, ...).
+    - No dangling edge connections (source and target IDs must exist).
+    - Single connected component (all nodes reachable from root).
+- **Automated Repair-Retry Flow**:
+  - If validation fails, `MindmapService` invokes the LLM exactly once more, passing itemized validation error descriptions to prompt self-correction.
+- **Budget Truncation (12,000 Chars)**:
+  - Input text exceeding 12,000 characters is deterministically truncated pre-LLM call.
+  - The API response surfaces `truncated: true` and logs warning metadata.
+- **Interactive Node-Link Diagram**:
+  - Visualized using React Flow (`@xyflow/react`) and auto-layout calculated via Dagre graph engine.
+  - Root node features distinct vibrant styling and pulsing animation accents.
+  - Interactive click handling opens the summary panel showing exact 1-sentence summaries and node relationship connections.
+- **Persistent Storage**:
+  - Mindmaps persisted locally in SQLite (`better-sqlite3` with WAL mode enabled).
+- **Complete Test Coverage**:
+  - Unit tests for validation, truncation, and repair retry orchestration.
+  - Integration tests for Express HTTP API routes.
+  - Frontend component tests using React Testing Library and Jest DOM.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Requirements
+
+- Node.js >= 18.x
+- pnpm >= 8.x (`npm i -g pnpm`)
+
+### 2. Installation & Setup
+
+```bash
+# Install all monorepo dependencies
+pnpm install
+
+# Copy environment template
+cp .env.example .env
+```
+
+### 3. Running Locally
+
+```bash
+# Run server & client concurrently in dev mode
+pnpm dev
+
+# Client available at: http://localhost:5173
+# Backend API available at: http://localhost:3001
+```
+
+---
+
+## 🧪 Running Tests
+
+```bash
+# Run all tests across the workspace (backend + frontend)
+pnpm test
+
+# Run backend server tests only
+pnpm --filter server test
+
+# Run frontend client tests only
+pnpm --filter client test
+```
+
+---
+
+## 🔑 Environment Variables
+
+| Variable | Description | Default |
+|---|---|---|
+| `PORT` | Backend server port | `3001` |
+| `NODE_ENV` | Environment mode (`development` / `production` / `test`) | `development` |
+| `MOCK_MODE` | Set `true` to use deterministic mock LLM fixtures without OpenAI API key | `true` |
+| `OPENAI_API_KEY` | OpenAI API key for live GPT-4o-mini generation | `""` |
+| `DATABASE_PATH` | SQLite storage file location | `./data/mindmaps.db` |
+| `VITE_API_URL` | API base URL for Vite frontend client | `http://localhost:3001` |
+
+---
+
+## 📜 API Endpoint Specification
+
+### `POST /api/mindmaps`
+Generates, validates, persists, and returns a mindmap.
+
+- **Request Body**:
+  ```json
+  {
+    "text": "Microservices architecture breaks down applications into independent services..."
+  }
+  ```
+- **Responses**:
+  - `201 Created`: Returns mindmap object.
+  - `400 Bad Request`: Input empty or < 20 characters.
+  - `422 Unprocessable Entity`: LLM output failed domain validation after repair attempt (surfaces `details` array of itemized failures).
+
+### `GET /api/mindmaps`
+Returns all persisted mindmap summaries.
+
+### `GET /api/mindmaps/:id`
+Returns full mindmap by ID.
+
+---
+
+## 📄 License
+MIT © Visualli Engineering Submission
