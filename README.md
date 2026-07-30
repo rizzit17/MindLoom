@@ -1,21 +1,21 @@
-# Visualli Mini Mindmap 🧠✨
+# Visualli Mini Mindmap 
 
 > A production-quality, full-stack application that transforms raw input text into interactive node-link mindmaps powered by structured LLM outputs, strict Zod + domain-rule validation, automatic repair-retry cycles, and React Flow visualization.
 
 ---
 
-## 🕒 Time Note & Submission Details
+##  Time Note & Submission Details
 
 - **Time Spent**: ~4.5 Hours
 - **LLM Provider**: **Groq API** (`llama-3.3-70b-versatile`), **Google Gemini API** (`gemini-2.5-flash`), and **OpenAI API** (`gpt-4o-mini`). Configured with native JSON Structured Output mode (`response_format: { type: "json_object" }`).
 - **MOCK Mode Support**: Supported via `MOCK_MODE=true` environment flag for running fully offline without requiring an API key.
 - **Stretch Goals Completed (2 of 4)**:
-  1. 🎨 **Light / Dark Theme**: Driven by CSS variables (`:root` / `.dark` design tokens) with custom studio dot grid background texture and theme-aware components.
-  2. 🔍 **Drill-down Expansion**: Clicking any node surfaces a **"Drill Down & Expand Node"** action button that triggers a `POST /api/mindmaps/:id/expand` endpoint, dynamically expanding child sub-nodes for that node.
+  1.  **Light / Dark Theme**: Driven by CSS variables (`:root` / `.dark` design tokens) with custom studio dot grid background texture and theme-aware components.
+  2.  **Drill-down Expansion**: Clicking any node surfaces a **"Drill Down & Expand Node"** action button that triggers a `POST /api/mindmaps/:id/expand` endpoint, dynamically expanding child sub-nodes for that node.
 
 ---
 
-## 🏛 Architecture Overview
+##  Architecture Overview
 
 Visualli Mini Mindmap treats all LLM outputs as untrusted input. Malformed responses trigger an automated repair flow with itemized error descriptions before persisting or serving data to the client.
 
@@ -42,7 +42,7 @@ Visualli Mini Mindmap treats all LLM outputs as untrusted input. Malformed respo
 
 ---
 
-## 📦 Features & Verification Checklist
+##  Features & Verification Checklist
 
 - **Strict Validation Engine**:
   - Validates JSON structure via Zod schema (`shared/src/schemas/mindmap.schema.ts`).
@@ -74,7 +74,7 @@ Visualli Mini Mindmap treats all LLM outputs as untrusted input. Malformed respo
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Requirements
 
@@ -111,7 +111,7 @@ pnpm dev
 
 ---
 
-## 🧪 Running Tests
+##  Running Tests
 
 ```bash
 # Run all 21 tests across the workspace (backend + frontend)
@@ -126,7 +126,7 @@ pnpm --filter client test
 
 ---
 
-## 🔑 Environment Variables
+##  Environment Variables
 
 | Variable | Description | Default |
 |---|---|---|
@@ -140,7 +140,7 @@ pnpm --filter client test
 
 ---
 
-## 📜 API Endpoint Specification
+##  API Endpoint Specification
 
 ### `POST /api/mindmaps`
 Generates, validates, persists, and returns a mindmap.
@@ -176,5 +176,5 @@ Returns full mindmap by ID.
 
 ---
 
-## 📄 License
+##  License
 MIT © Visualli Engineering Submission

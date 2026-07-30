@@ -1,11 +1,11 @@
-# 🧠 Visualli AI Challenge: "Mini Mindmap"
+#  Visualli AI Challenge: "Mini Mindmap"
 
 > [!NOTE]
 > Please commit your work at each logical milestone. We want to see how your
 > solution evolves over time, not one large final commit or push. A clean series
 > of commits for each working version is strongly preferred.
 
-## 🌍 Context & Problem Statement
+##  Context & Problem Statement
 
 Welcome to the **Visualli AI Challenge**. This exercise is a very scaled-down
 version of what Visualli does in production: turn any content into an interactive
@@ -20,7 +20,7 @@ while still touching the basics of **Backend** and **Frontend engineering**.
 - Stretch goals are optional and only matter as tie-breakers. 
 - A clean, well-tested core submission is stronger than a rushed stretch goal.
 
-## ✨ Exercise Summary
+##  Exercise Summary
 
 In short, you are expected to:
 
@@ -29,7 +29,7 @@ In short, you are expected to:
 - expose the flow through a simple backend API
 - render the result as an interactive diagram in React
 
-## 🛠️ What You're Building
+## ️ What You're Building
 
 Build a small full-stack app with one main user flow:
 
@@ -53,7 +53,7 @@ flowchart LR
     FE -->|Interactive diagram| U
 ```
 
-## 📐 The Data Contract
+##  The Data Contract
 
 The AI layer and the frontend must agree on a single response shape. Treat this
 as a strict contract.
@@ -90,7 +90,7 @@ follow instructions, so your code must be the backstop:
 - If the LLM response does not parse or fails validation, **retry once** with a
   corrective prompt before giving up and returning a clear error to the client.
 
-## 🤖 Part 1 - AI Engineering
+##  Part 1 - AI Engineering
 
 Implement a function in either Python or Node with this signature:
 
@@ -100,14 +100,14 @@ generateMindmap(text: string) => Mindmap
 
 Requirements:
 
-- **🔌 LLM provider:** Call a real LLM API of your choice. Use an LLM that fits to the purpose / whichever provider you already have access to.
-- **🧾 Structured output:** Use **structured output / JSON mode**. Do not rely on plain-text prompting like "please respond with JSON" and then manually parse free-form text.
-- **✅ Validation:** Validate the raw model output against the schema above before it reaches the API layer. Pydantic, Zod, or an equivalent library is fine.
-- **⚠️ Edge cases:** Handle the following cases:
+- ** LLM provider:** Call a real LLM API of your choice. Use an LLM that fits to the purpose / whichever provider you already have access to.
+- ** Structured output:** Use **structured output / JSON mode**. Do not rely on plain-text prompting like "please respond with JSON" and then manually parse free-form text.
+- ** Validation:** Validate the raw model output against the schema above before it reaches the API layer. Pydantic, Zod, or an equivalent library is fine.
+- **️ Edge cases:** Handle the following cases:
   - empty input
   - input that is too short to summarize meaningfully
   - input that is long enough to raise token-limit concerns
-- **🧪 Mock mode:** Support a `MOCK_MODE=true` environment variable for cases where you do not
+- ** Mock mode:** Support a `MOCK_MODE=true` environment variable for cases where you do not
   want to share an API key. In mock mode, return a canned but realistic
   `Mindmap` for a small set of fixture inputs. Document this clearly in the
   README.
@@ -116,7 +116,7 @@ We care more about *how* you constrain and validate model output than about the
 exact wording of your prompt. Show us that you understand LLM output is
 untrusted input.
 
-## 🖥️ Part 2 - Backend (Node.js + Express)
+## ️ Part 2 - Backend (Node.js + Express)
 
 Build a small Express API with these endpoints:
 
@@ -132,29 +132,29 @@ Build a small Express API with these endpoints:
 
 Requirements:
 
-- **🧾 Request validation:** Validate the request body using a schema validation library of your choice.
+- ** Request validation:** Validate the request body using a schema validation library of your choice.
   Missing or empty `text` should return `400` with a clear error message.
-- **💾 Persistence:** Persist data somewhere that survives beyond a single request. In-memory
+- ** Persistence:** Persist data somewhere that survives beyond a single request. In-memory
   storage is fine. A file, SQLite, or lowdb is a nice-to-have. MongoDB is a
   bonus if you want to mirror our actual stack, but it is not required.
-- **🛡️ Error handling:** Use centralized error handling. A thrown error should not produce an
+- **️ Error handling:** Use centralized error handling. A thrown error should not produce an
   unhandled stack trace in the response.
-- **🧪 Tests:** Include at least a few Jest tests:
+- ** Tests:** Include at least a few Jest tests:
   - one for request validation failure
   - one for a successful create flow
   - one for the generator's schema-repair/retry logic
-- **🚫 Real API calls in tests:** Mock the LLM call in tests. Do not hit a real provider in automated tests.
+- ** Real API calls in tests:** Mock the LLM call in tests. Do not hit a real provider in automated tests.
 
-## 🎨 Part 3 - Frontend (React + TypeScript)
+##  Part 3 - Frontend (React + TypeScript)
 
 Build a single-page UI with the following behavior:
 
-- **📝 Input area:** A textarea and submit button
+- ** Input area:** A textarea and submit button
 - **⏳ Loading state:** A loading state while generation is in progress
-- **🕸️ Diagram view:** A diagram view that renders the returned `Mindmap` as an actual node-link
+- **️ Diagram view:** A diagram view that renders the returned `Mindmap` as an actual node-link
   visualization
-- **💬 Summary view:** A visible summary view when a node is clicked
-- **📭 Empty and error states:** Clear empty and error states
+- ** Summary view:** A visible summary view when a node is clicked
+- ** Empty and error states:** Clear empty and error states
 
 Diagram requirements:
 
@@ -179,7 +179,7 @@ State management, styling, and component structure are up to you. We want to
 see how you organize a small React app, not whether you copied a particular
 stack pattern.
 
-## 🚀 Stretch goals (optional)
+##  Stretch goals (optional)
 
 If you have time left, pick at most one or two. Depth on one is better than
 breadth across several.
@@ -196,7 +196,7 @@ breadth across several.
 - **Light/dark theme.** Drive the theme with CSS variables rather than a
   component-level toggle.
 
-## 📊 Evaluation Criteria
+##  Evaluation Criteria
 
 Your submission will be evaluated on the following areas:
 
@@ -208,7 +208,7 @@ Your submission will be evaluated on the following areas:
 | **Testing quality** | Tests that cover meaningful failure modes and behavior that could actually break |
 | **Communication** | A README that explains setup, tradeoffs made under time pressure, and what you would improve with more time |
 
-## 📦 Submission Deliverables
+##  Submission Deliverables
 
 1. **Source code repository:** Send a public repository URL containing all components.
 2. **`README.md`:** Include:

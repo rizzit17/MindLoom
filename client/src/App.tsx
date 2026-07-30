@@ -272,7 +272,7 @@ export const AppContent: React.FC = () => {
 
       {/* Studio Footer */}
       <footer className="border-t-[1.5px] border-border bg-surface px-6 py-2.5 font-mono text-xs text-ink/60 flex items-center justify-between flex-shrink-0">
-        <span>Visualli.ai — Mini Mindmap Studio</span>
+        <span>Visualli.ai - Mini Mindmap Studio</span>
         <span className="text-accent font-medium font-display">React Flow • Dagre • Zod Repair Engine</span>
       </footer>
     </div>

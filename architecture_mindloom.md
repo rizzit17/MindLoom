@@ -1,4 +1,4 @@
-# Architecture — Visualli Mini Mindmap
+# Architecture - Visualli Mini Mindmap
 
 > Companion to `context.md`. That file explains *what* and *why* (the challenge
 > requirements); this file explains *how* the system is designed and organized.
@@ -112,41 +112,41 @@ visualli-mini-mindmap/
 | Package manager | pnpm workspaces | monorepo with shared types, no duplication |
 
 **SQLite over lowdb:** chosen for genuine query semantics and safer concurrent
-writes, while still requiring no external service — closer to a production
+writes, while still requiring no external service - closer to a production
 persistence layer without adding real infrastructure.
 
 ## Backend Layering
 
 Each layer has exactly one job:
 
-- **routes** — declare paths only, delegate to controllers.
-- **controllers** — parse request, call services, shape HTTP response, forward
+- **routes** - declare paths only, delegate to controllers.
+- **controllers** - parse request, call services, shape HTTP response, forward
   errors via `next()`.
-- **services** — orchestration and business logic. `mindmap.service.ts` is the
+- **services** - orchestration and business logic. `mindmap.service.ts` is the
   conductor: calls the LLM client, runs validation, triggers repair-retry, persists
   via the repository.
-  - **services/llm/** — isolates all provider concerns behind one `LlmClient`
+  - **services/llm/** - isolates all provider concerns behind one `LlmClient`
     interface. `openaiProvider.ts` and `mockProvider.ts` both implement it;
     `llmClient.ts` is a factory that picks one based on `MOCK_MODE`. This makes the
     provider swappable and trivially mockable in tests (dependency injection).
-  - **prompts.ts** — system prompt, developer/user prompt, and repair prompt live
+  - **prompts.ts** - system prompt, developer/user prompt, and repair prompt live
     together here, versioned as plain exported strings/functions.
-- **validators** — `mindmapValidator.ts` does two jobs: Zod structural parsing, then
-  domain-rule checks (node count 5–9, unique ids, valid `rootId`, no dangling edges).
+- **validators** - `mindmapValidator.ts` does two jobs: Zod structural parsing, then
+  domain-rule checks (node count 5 - 9, unique ids, valid `rootId`, no dangling edges).
   It also owns the retry-once repair flow contract (it tells the service *what* is
   wrong so the service can build a repair prompt). `requestValidators.ts` validates
   the inbound HTTP payload shape.
-- **repositories** — the *only* code that touches SQLite. `db.ts` owns the
+- **repositories** - the *only* code that touches SQLite. `db.ts` owns the
   connection and migration; `mindmap.repository.ts` exposes `create`, `findAll`,
   `findById`.
-- **middleware** — `errorHandler.ts` is the single place that turns thrown errors
+- **middleware** - `errorHandler.ts` is the single place that turns thrown errors
   into HTTP responses (never an unhandled stack trace reaches the client);
   `asyncHandler.ts` wraps async route handlers so rejected promises reach it.
-- **config** — `env.ts` loads and Zod-validates all environment variables at
+- **config** - `env.ts` loads and Zod-validates all environment variables at
   startup; fail fast rather than fail deep in a request handler.
-- **utils** — `logger.ts` (structured logging, replaces stray `console.log`),
+- **utils** - `logger.ts` (structured logging, replaces stray `console.log`),
   `tokenEstimate.ts` (rough chars/4 heuristic for token budgeting).
-- **fixtures** — canned `Mindmap` objects for `MOCK_MODE`, chosen loosely by input
+- **fixtures** - canned `Mindmap` objects for `MOCK_MODE`, chosen loosely by input
   characteristics so mock mode still feels responsive to different pasted text.
 
 ## The Untrusted-Output Pipeline (core of the AI Engineering requirement)
@@ -167,7 +167,7 @@ raw input text
 ```
 
 Key invariant: there is exactly **one** repair attempt total, never an open-ended
-retry loop — this is deliberate, both to bound latency/cost and because the
+retry loop - this is deliberate, both to bound latency/cost and because the
 challenge brief explicitly asks for "retry once."
 
 ## API Contract
@@ -175,8 +175,8 @@ challenge brief explicitly asks for "retry once."
 | Endpoint | Request | Success | Failure |
 |---|---|---|---|
 | `POST /api/mindmaps` | `{ text: string }` | `201` full `Mindmap` + `id`, `createdAt` | `400` bad input, `422` validation failed after repair, `502` LLM provider error |
-| `GET /api/mindmaps` | — | `200` `{ id, title, createdAt }[]` | — |
-| `GET /api/mindmaps/:id` | — | `200` full `Mindmap` | `404` unknown id |
+| `GET /api/mindmaps` | - | `200` `{ id, title, createdAt }[]` | - |
+| `GET /api/mindmaps/:id` | - | `200` full `Mindmap` | `404` unknown id |
 
 All error bodies share one shape: `{ "error": string }`, produced only by
 `errorHandler.ts`.
@@ -185,34 +185,34 @@ All error bodies share one shape: `{ "error": string }`, produced only by
 
 - **App.tsx** composes the single page: `InputPanel` → `MindmapCanvas` +
   `SummaryPanel`, with `HistorySidebar` alongside. No router needed at this scope.
-- **api/** — one Axios instance (`client.ts`) with a base URL from env and an error
+- **api/** - one Axios instance (`client.ts`) with a base URL from env and an error
   interceptor; `mindmaps.ts` holds typed request functions returning `shared` types
   directly (no re-declared local types).
-- **hooks/** — React Query wraps every server interaction: `useGenerateMindmap`
+- **hooks/** - React Query wraps every server interaction: `useGenerateMindmap`
   (mutation), `useMindmapsList` / `useMindmap` (queries). This is also where
   loading/error state naturally falls out, feeding `LoadingSkeleton` / `ErrorState`.
-- **Diagram/** — `diagramLayout.ts` computes node positions (root centered/top,
+- **Diagram/** - `diagramLayout.ts` computes node positions (root centered/top,
   children arranged radially or in layers around it); `MindmapCanvas.tsx` wraps
   React Flow with a custom node type (`MindmapNodeCard`) and labeled edges;
   Framer Motion drives entrance/selection animation.
-- **SummaryPanel** — shown on node click, displays that node's one-sentence summary.
-- **theme** — `themeContext.tsx` + `theme.css` drive light/dark via CSS variables,
+- **SummaryPanel** - shown on node click, displays that node's one-sentence summary.
+- **theme** - `themeContext.tsx` + `theme.css` drive light/dark via CSS variables,
   not per-component toggles, so React Flow and Tailwind both pick it up for free.
-- **State** — local component state plus the React Query cache is sufficient; no
+- **State** - local component state plus the React Query cache is sufficient; no
   global store is introduced, since scope doesn't warrant one.
 
 ## Testing Strategy
 
-- **Backend unit** — `mindmapValidator.test.ts` covers each domain rule failing
+- **Backend unit** - `mindmapValidator.test.ts` covers each domain rule failing
   independently (bad node count, duplicate id, bad rootId, dangling edge) and the
   repair-prompt construction; `mindmap.service.test.ts` covers the retry-once
   orchestration with a mocked `LlmClient`.
-- **Backend integration** — `mindmaps.routes.test.ts` (Supertest) covers request
+- **Backend integration** - `mindmaps.routes.test.ts` (Supertest) covers request
   validation failure (`400`), a full successful create flow against a mocked LLM,
   and the end-to-end repair path.
-- **Frontend** — `SummaryPanel.test.tsx` covers node click → summary reveal;
+- **Frontend** - `SummaryPanel.test.tsx` covers node click → summary reveal;
   `MindmapCanvas.test.tsx` covers empty-state / layout logic.
-- LLM calls are **always** mocked in tests — the real provider is never hit in CI
+- LLM calls are **always** mocked in tests - the real provider is never hit in CI
   or `pnpm test`.
 
 ## Non-Functional Concerns
@@ -221,8 +221,8 @@ All error bodies share one shape: `{ "error": string }`, produced only by
 - **Dependency injection** for the LLM provider so tests substitute a mock without
   touching the service's internals.
 - **Memoization** (`React.memo`) on the custom React Flow node component; debounced
-  character-count/token-estimate calculation on the textarea (~150–250ms).
-- **No hardcoded config** — everything env-driven through `config/env.ts`.
+  character-count/token-estimate calculation on the textarea (~150 - 250ms).
+- **No hardcoded config** - everything env-driven through `config/env.ts`.
 
 ## Commit Plan (milestone-based, matches submission guidance)
 
@@ -234,7 +234,7 @@ All error bodies share one shape: `{ "error": string }`, produced only by
 6. Retry-once repair flow wired into the service
 7. SQLite persistence layer
 8. API routes/controllers wired end-to-end + centralized error handling
-9. Backend tests (validation, success flow, retry logic — LLM mocked)
+9. Backend tests (validation, success flow, retry logic - LLM mocked)
 10. Frontend scaffold (Vite + React + TS + Tailwind + React Query + Axios)
 11. `InputPanel` (counter, token estimate, loading/disabled states)
 12. `MindmapCanvas` (React Flow, custom node, layout logic)
@@ -244,7 +244,7 @@ All error bodies share one shape: `{ "error": string }`, produced only by
 16. Frontend tests (node click → summary, canvas layout/empty state)
 17. README, `.env.example`, final polish pass
 
-Each commit is a working, reviewable milestone — never one large final commit.
+Each commit is a working, reviewable milestone - never one large final commit.
 
 ## Open Decisions Deliberately Fixed (so nothing is ambiguous downstream)
 

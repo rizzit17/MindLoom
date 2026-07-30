@@ -43,7 +43,7 @@ export function getEnvConfig() {
 
   const _env = envSchema.safeParse(parsedEnv);
   if (!_env.success) {
-    console.error('❌ Invalid environment variables:', _env.error.format());
+    console.error(' Invalid environment variables:', _env.error.format());
     throw new Error('Invalid environment configuration');
   }
   return _env.data;

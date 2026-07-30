@@ -131,7 +131,7 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
           </p>
         </div>
         <div className="text-[11px] text-ink/80 bg-surface border border-border px-3 py-1 rounded-[3px]">
-          Structured Zod Schema • 5–9 Nodes • Dagre Layout
+          Structured Zod Schema • 5 - 9 Nodes • Dagre Layout
         </div>
       </div>
     );
