@@ -1,0 +1,25 @@
+{
+  "name": "visualli-mini-mindmap-monorepo",
+  "private": true,
+  "scripts": {
+    "dev:server": "pnpm --filter server dev",
+    "dev:client": "pnpm --filter client dev",
+    "build:shared": "pnpm --filter shared build",
+    "build:server": "pnpm --filter server build",
+    "build:client": "pnpm --filter client build",
+    "build": "pnpm build:shared && pnpm build:server && pnpm build:client",
+    "test:server": "pnpm --filter server test",
+    "test:client": "pnpm --filter client test",
+    "test": "pnpm test:server && pnpm test:client",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\""
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
+  }
+}
