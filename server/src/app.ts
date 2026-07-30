@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
 import { createMindmapsRouter } from './routes/mindmaps.routes';
 import { errorHandler } from './middleware/errorHandler';
 
@@ -16,6 +18,16 @@ export const createApp = () => {
 
   // Mindmaps API routes
   app.use('/api/mindmaps', createMindmapsRouter());
+
+  // Serve compiled React static frontend in production if built
+  const clientDistPath = path.resolve(__dirname, '../../client/dist');
+  if (fs.existsSync(clientDistPath)) {
+    app.use(express.static(clientDistPath));
+    app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api')) return next();
+      res.sendFile(path.join(clientDistPath, 'index.html'));
+    });
+  }
 
   // Global error handler middleware
   app.use(errorHandler);
