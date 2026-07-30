@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Sparkles, ArrowRight, Tag } from 'lucide-react';
+import { X, Tag, ArrowUpRight } from 'lucide-react';
 import { Mindmap, MindmapNode } from '@visualli/shared';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -32,7 +32,7 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({
       return {
         node: targetNode,
         label: conn.label,
-        direction: conn.from === node.id ? 'outgoing' : 'incoming',
+        direction: conn.from === node.id ? 'OUTGOING' : 'INCOMING',
       };
     })
     .filter((item): item is { node: MindmapNode; label: string | undefined; direction: string } => Boolean(item.node));
@@ -43,59 +43,68 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 20 }}
-        transition={{ duration: 0.2 }}
-        className="glass-panel rounded-2xl p-6 shadow-2xl border border-slate-700/60 flex flex-col gap-5 w-full max-w-sm"
+        transition={{ duration: 0.15 }}
+        className="bg-surface border-2 border-border shadow-[6px_6px_0px_var(--border)] font-mono p-5 flex flex-col gap-4 w-full max-w-sm"
+        style={{ borderRadius: '0px' }}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <Tag className="w-3.5 h-3.5 text-blue-400" />
-              <span className="text-xs font-mono text-slate-400">Node ID: {node.id}</span>
+        <div className="flex items-start justify-between gap-3 border-b-2 border-border pb-3">
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Tag className="w-3.5 h-3.5 text-accent" />
+              <span className="text-xs font-bold text-ink font-mono">NODE_ID: {node.id}</span>
               {isRoot && (
-                <span className="text-[10px] font-bold tracking-widest uppercase text-blue-300 bg-blue-900/60 px-2 py-0.5 rounded-full border border-blue-700/50 flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-blue-300" /> Root Topic
+                <span className="text-[10px] font-bold tracking-wider uppercase text-white bg-accent border border-border px-2 py-0.5 font-mono">
+                  [ROOT TOPIC]
                 </span>
               )}
             </div>
-            <h3 className="text-lg font-bold text-slate-100 leading-snug">{node.label}</h3>
+            <h3 className="text-base font-display font-black text-ink uppercase leading-snug">
+              {node.label}
+            </h3>
           </div>
           <button
             onClick={onClose}
             aria-label="Close panel"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="brutal-btn p-1 text-ink"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800 flex flex-col gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Summary Details
+        <div className="border-2 border-border bg-bg p-3.5 flex flex-col gap-2">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-ink/70">
+            // SUMMARY_DETAILS (1-SENTENCE CONSTRAINT)
           </span>
-          <p className="text-sm text-slate-200 leading-relaxed font-normal">{node.summary}</p>
+          <p className="text-xs text-ink leading-relaxed font-mono font-medium">{node.summary}</p>
         </div>
 
         {connectedNodes.length > 0 && (
           <div className="flex flex-col gap-2.5">
-            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Connected Nodes ({connectedNodes.length})
+            <span className="text-xs font-bold uppercase tracking-wider text-ink">
+              CONNECTED_RELATIONSHIPS ({connectedNodes.length})
             </span>
-            <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
+            <div className="flex flex-col gap-2 max-h-52 overflow-y-auto pr-1">
               {connectedNodes.map(({ node: relNode, label, direction }, idx) => (
                 <button
                   key={idx}
                   onClick={() => onSelectNode(relNode)}
-                  className="flex items-center justify-between p-2.5 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-left border border-slate-700/50 hover:border-blue-500/50 transition-all group"
+                  className="brutal-btn p-2.5 text-left flex items-center justify-between group"
                 >
-                  <div className="flex flex-col">
-                    <span className="text-xs font-medium text-slate-200 group-hover:text-blue-300 transition-colors">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-bold text-ink group-hover:text-accent transition-colors">
                       {relNode.label}
                     </span>
-                    {label && <span className="text-[10px] text-slate-400">{label}</span>}
+                    {label && (
+                      <span className="text-[10px] font-mono text-ink/70 uppercase">
+                        TAG: [{label.toUpperCase()}]
+                      </span>
+                    )}
                   </div>
-                  <div className="flex items-center gap-1 text-slate-400 group-hover:text-blue-400">
-                    <span className="text-[10px] uppercase font-mono">{direction}</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  <div className="flex items-center gap-1 text-ink group-hover:text-accent">
+                    <span className="text-[9px] uppercase font-mono font-bold bg-bg border border-border px-1">
+                      {direction}
+                    </span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
                   </div>
                 </button>
               ))}

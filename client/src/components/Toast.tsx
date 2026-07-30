@@ -27,44 +27,48 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className="fixed top-5 right-5 z-50 max-w-md w-full"
+        transition={{ duration: 0.15 }}
+        className="fixed top-5 right-5 z-50 max-w-md w-full font-mono"
       >
         <div
-          className={`p-4 rounded-2xl shadow-2xl border backdrop-blur-xl flex flex-col gap-2 ${
+          className={`p-4 border-2 bg-surface text-ink font-mono flex flex-col gap-2 ${
             isError
-              ? 'bg-rose-950/90 border-rose-800/80 text-rose-100'
+              ? 'border-accent shadow-[6px_6px_0px_var(--accent)]'
               : isWarning
-              ? 'bg-amber-950/90 border-amber-800/80 text-amber-100'
-              : 'bg-slate-900/90 border-slate-700 text-slate-100'
+              ? 'border-amber-500 shadow-[6px_6px_0px_#f59e0b]'
+              : 'border-accent-secondary shadow-[6px_6px_0px_var(--accent-secondary)]'
           }`}
+          style={{ borderRadius: '0px' }}
         >
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-2.5">
+          <div className="flex items-start justify-between gap-3 border-b border-border pb-2">
+            <div className="flex items-center gap-2">
               {isError || isWarning ? (
-                <AlertCircle className={`w-5 h-5 flex-shrink-0 ${isError ? 'text-rose-400' : 'text-amber-400'}`} />
+                <AlertCircle className={`w-5 h-5 flex-shrink-0 ${isError ? 'text-accent' : 'text-amber-500'}`} />
               ) : (
-                <Info className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                <Info className="w-5 h-5 text-accent-secondary flex-shrink-0" />
               )}
-              <h4 className="font-semibold text-sm">{toast.title}</h4>
+              <h4 className="font-display font-black text-sm uppercase text-ink tracking-tight">
+                [{toast.type.toUpperCase()}] {toast.title}
+              </h4>
             </div>
             <button
               onClick={onDismiss}
-              className="p-1 rounded-lg hover:bg-white/10 transition-colors text-slate-400 hover:text-white"
+              className="brutal-btn p-1 text-ink"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {toast.message && <p className="text-xs opacity-90 leading-relaxed pl-7">{toast.message}</p>}
+          {toast.message && <p className="text-xs font-mono leading-relaxed font-medium">{toast.message}</p>}
 
           {toast.details && toast.details.length > 0 && (
-            <div className="pl-7 mt-1 flex flex-col gap-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider opacity-75">
-                Itemized Validation Failures:
+            <div className="mt-1 flex flex-col gap-1 border-t border-border pt-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-accent font-mono">
+                ITEMIZED_VALIDATION_FAILURES:
               </span>
-              <ul className="list-disc list-inside text-xs space-y-0.5 opacity-90 font-mono">
+              <ul className="list-square list-inside text-xs space-y-1 font-mono font-bold">
                 {toast.details.map((detail, idx) => (
-                  <li key={idx}>{detail}</li>
+                  <li key={idx}>» {detail}</li>
                 ))}
               </ul>
             </div>

@@ -1,5 +1,5 @@
 import React, { useState, useId } from 'react';
-import { Sparkles, AlertTriangle, FileText, Loader2 } from 'lucide-react';
+import { Terminal, AlertTriangle, Loader2, ArrowRight } from 'lucide-react';
 
 interface InputPanelProps {
   onGenerate: (text: string) => void;
@@ -8,15 +8,15 @@ interface InputPanelProps {
 
 const SAMPLE_TEXTS = [
   {
-    label: 'Microservices Architecture',
+    label: 'MICROSERVICES_ARCH',
     text: `Microservices architecture decomposes a software application into small, independent services that communicate over lightweight protocols like HTTP/REST or gRPC. Each service is owned by a small team and focused on a single business capability. Core benefits include independent scalability, technology flexibility, isolated deployments, and fault isolation. Key operational challenges involve distributed logging, API gateway routing, data consistency, and service mesh management.`,
   },
   {
-    label: 'Artificial Intelligence & ML',
+    label: 'AI_AND_MACHINE_LEARNING',
     text: `Artificial intelligence empowers computer systems to perform tasks traditionally requiring human cognition, such as visual perception, natural language processing, decision-making, and autonomous navigation. Machine learning is a core subset focused on algorithms that learn patterns directly from datasets without explicit programming. Deep neural networks, supervised learning, reinforcement learning, and modern transformer architectures drive modern advances in generative AI.`,
   },
   {
-    label: 'DevOps & CI/CD Pipeline',
+    label: 'DEVOPS_CICD_PIPELINE',
     text: `DevOps is a set of practices combining software development and IT operations to shorten the development lifecycle and provide continuous delivery with high software quality. Continuous Integration (CI) automatically builds and runs automated tests whenever code changes are pushed. Continuous Deployment (CD) automates releasing validated code into production environments, utilizing containerization with Docker and orchestration with Kubernetes.`,
   },
 ];
@@ -39,15 +39,17 @@ export const InputPanel: React.FC<InputPanelProps> = ({ onGenerate, isLoading })
   };
 
   return (
-    <div className="glass-panel rounded-2xl p-6 shadow-xl flex flex-col gap-4 border border-slate-700/50">
-      <div className="flex items-center justify-between">
+    <div className="bg-surface border-2 border-border shadow-[4px_4px_0px_var(--border)] p-5 font-mono flex flex-col gap-4">
+      <div className="flex items-center justify-between border-b-2 border-border pb-3">
         <div className="flex items-center gap-2">
-          <FileText className="w-5 h-5 text-blue-400" />
-          <h2 className="text-lg font-semibold tracking-wide text-slate-100">Source Document</h2>
+          <Terminal className="w-5 h-5 text-accent" />
+          <h2 className="text-base font-display font-black tracking-tight uppercase text-ink">
+            SOURCE_DOCUMENT // INPUT
+          </h2>
         </div>
-        <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
-          <span>{charCount} / 12,000 chars</span>
-          <span className="bg-slate-800 text-blue-300 px-2 py-0.5 rounded-full border border-slate-700">
+        <div className="flex items-center gap-3 text-xs font-mono text-ink">
+          <span>{charCount} / 12,000 CHARS</span>
+          <span className="bg-bg border border-border px-2 py-0.5 font-bold">
             ~{tokenEstimate} tokens
           </span>
         </div>
@@ -61,35 +63,36 @@ export const InputPanel: React.FC<InputPanelProps> = ({ onGenerate, isLoading })
             onChange={(e) => setText(e.target.value)}
             disabled={isLoading}
             placeholder="Paste your document, notes, or article text here to generate an interactive mindmap..."
-            className="w-full h-44 p-4 rounded-xl bg-slate-900/80 text-slate-100 placeholder-slate-500 border border-slate-700/70 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-sm leading-relaxed"
+            className="w-full h-40 p-4 border-2 border-border bg-bg text-ink placeholder-ink/50 focus:outline-none focus:ring-2 focus:ring-accent transition-all resize-none text-sm leading-relaxed font-mono"
+            style={{ borderRadius: '0px' }}
           />
           {isTruncated && (
-            <div className="absolute bottom-3 right-3 flex items-center gap-1.5 text-xs text-amber-400 bg-amber-950/80 px-2.5 py-1 rounded-lg border border-amber-800/60 backdrop-blur">
+            <div className="absolute bottom-3 right-3 flex items-center gap-1.5 text-xs bg-amber-500 text-black border border-border px-2.5 py-1 font-bold">
               <AlertTriangle className="w-3.5 h-3.5" />
-              <span>Input exceeds 12,000 chars and will be truncated</span>
+              <span>TEXT EXCEEDS 12,000 CHARS (WILL TRUNCATE)</span>
             </div>
           )}
         </div>
 
         {isTooShort && (
-          <p className="text-xs text-amber-400 flex items-center gap-1.5">
-            <AlertTriangle className="w-3.5 h-3.5" />
+          <p className="text-xs text-accent font-bold flex items-center gap-1.5">
+            <AlertTriangle className="w-3.5 h-3.5 text-accent" />
             Please enter at least 20 characters for meaningful mindmap extraction.
           </p>
         )}
 
-        <div className="flex items-center justify-between gap-4 mt-1">
-          <div className="flex items-center gap-2 overflow-x-auto py-1">
-            <span className="text-xs text-slate-400 whitespace-nowrap">Presets:</span>
+        <div className="flex items-center justify-between gap-4 mt-1 flex-wrap">
+          <div className="flex items-center gap-2 overflow-x-auto py-1 max-w-full">
+            <span className="text-xs font-bold text-ink uppercase">PRESETS:</span>
             {SAMPLE_TEXTS.map((sample, idx) => (
               <button
                 key={idx}
                 type="button"
                 disabled={isLoading}
                 onClick={() => setText(sample.text)}
-                className="text-xs px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all whitespace-nowrap disabled:opacity-50"
+                className="brutal-btn text-xs px-2.5 py-1 disabled:opacity-50 whitespace-nowrap"
               >
-                {sample.label}
+                [{sample.label}]
               </button>
             ))}
           </div>
@@ -97,17 +100,17 @@ export const InputPanel: React.FC<InputPanelProps> = ({ onGenerate, isLoading })
           <button
             type="submit"
             disabled={isDisabled}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium text-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 disabled:opacity-50 disabled:pointer-events-none transition-all shadow-lg shadow-blue-500/20 whitespace-nowrap"
+            className="brutal-btn-accent px-6 py-2.5 text-sm uppercase tracking-wider flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap ml-auto"
           >
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin text-white" />
-                <span>Generating Mindmap...</span>
+                <span>PROCESSING...</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4 text-blue-200" />
                 <span>Generate Mindmap</span>
+                <ArrowRight className="w-4 h-4 text-white" />
               </>
             )}
           </button>

@@ -11,11 +11,11 @@ export function getLayoutedElements(
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  // Direction: TB (Top-to-Bottom) or LR (Left-to-Right)
-  dagreGraph.setGraph({ rankdir: 'TB', ranksep: 80, nodesep: 60 });
+  // Direction: TB (Top-to-Bottom)
+  dagreGraph.setGraph({ rankdir: 'TB', ranksep: 90, nodesep: 70 });
 
-  const nodeWidth = 220;
-  const nodeHeight = 90;
+  const nodeWidth = 240;
+  const nodeHeight = 85;
 
   // Add nodes to Dagre
   mindmap.nodes.forEach((node) => {
@@ -50,18 +50,28 @@ export function getLayoutedElements(
     };
   });
 
-  // Convert to React Flow Edges
+  // Convert to React Flow Edges with Stamped Monospace Tags
   const edges: Edge[] = mindmap.connections.map((conn) => ({
     id: conn.id,
     source: conn.from,
     target: conn.to,
-    label: conn.label,
-    animated: true,
-    style: { stroke: '#3b82f6', strokeWidth: 2 },
-    labelStyle: { fill: '#94a3b8', fontSize: 11, fontWeight: 500 },
-    labelBgStyle: { fill: '#0f172a', fillOpacity: 0.8 },
+    label: conn.label ? `[ ${conn.label.toUpperCase()} ]` : undefined,
+    animated: false,
+    style: { stroke: '#0047FF', strokeWidth: 3 },
+    labelStyle: {
+      fill: 'var(--ink)',
+      fontSize: 10,
+      fontWeight: 700,
+      fontFamily: 'JetBrains Mono, monospace',
+    },
+    labelBgStyle: {
+      fill: 'var(--surface)',
+      stroke: 'var(--border)',
+      strokeWidth: 1.5,
+      rx: 0,
+      ry: 0,
+    },
     labelBgPadding: [6, 4],
-    labelBgBorderRadius: 4,
   }));
 
   return { nodes, edges };

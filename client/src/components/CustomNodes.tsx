@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import { Handle, Position, NodeProps, Node } from '@xyflow/react';
-import { Sparkles } from 'lucide-react';
 import { MindmapNode } from '@visualli/shared';
 
 export type MindmapNodeData = MindmapNode & {
@@ -16,28 +15,43 @@ export const CustomRootNode = memo(({ data }: NodeProps<MindmapCustomNode>) => {
   return (
     <div
       onClick={() => data.onNodeClick?.(data)}
-      className={`px-6 py-4 rounded-2xl shadow-2xl transition-all cursor-pointer select-none text-white border ${
+      className={`px-5 py-3.5 border-3 cursor-pointer select-none text-white transition-transform ${
         isSelected
-          ? 'ring-4 ring-blue-400 border-blue-300 scale-105 shadow-blue-500/40'
-          : 'border-blue-400/40 hover:border-blue-300 hover:scale-102'
+          ? 'bg-accent border-border shadow-[6px_6px_0px_var(--border)] translate-x-[-1px] translate-y-[-1px]'
+          : 'bg-accent border-border shadow-[4px_4px_0px_var(--border)] hover:translate-x-[-1px] hover:translate-y-[-1px]'
       }`}
       style={{
-        background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+        borderRadius: '0px',
       }}
     >
-      <Handle type="target" position={Position.Top} className="w-3 h-3 bg-blue-300 border-2 border-blue-900" />
-      <Handle type="target" position={Position.Left} className="w-3 h-3 bg-blue-300 border-2 border-blue-900" />
+      <Handle
+        type="target"
+        position={Position.Top}
+        className="!w-3 !h-3 !bg-surface !border-2 !border-border !rounded-none"
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="!w-3 !h-3 !bg-surface !border-2 !border-border !rounded-none"
+      />
 
-      <div className="flex items-center gap-2 mb-1">
-        <Sparkles className="w-4 h-4 text-blue-200 animate-pulse" />
-        <span className="text-[10px] font-bold tracking-widest uppercase text-blue-200 bg-blue-900/60 px-2 py-0.5 rounded-full">
-          Central Topic
-        </span>
+      <div className="flex items-center gap-1.5 mb-1 font-mono text-[10px] font-bold tracking-wider uppercase text-white/90">
+        <span className="bg-black text-white px-1.5 py-0.5 border border-white/40">[ROOT_TOPIC]</span>
       </div>
-      <h3 className="text-base font-bold tracking-tight leading-snug">{data.label}</h3>
+      <h3 className="text-base font-display font-black tracking-tight leading-tight uppercase text-white">
+        {data.label}
+      </h3>
 
-      <Handle type="source" position={Position.Bottom} className="w-3 h-3 bg-blue-300 border-2 border-blue-900" />
-      <Handle type="source" position={Position.Right} className="w-3 h-3 bg-blue-300 border-2 border-blue-900" />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="!w-3 !h-3 !bg-surface !border-2 !border-border !rounded-none"
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="!w-3 !h-3 !bg-surface !border-2 !border-border !rounded-none"
+      />
     </div>
   );
 });
@@ -50,19 +64,38 @@ export const CustomChildNode = memo(({ data }: NodeProps<MindmapCustomNode>) => 
   return (
     <div
       onClick={() => data.onNodeClick?.(data)}
-      className={`px-4 py-3 rounded-xl shadow-lg transition-all cursor-pointer select-none glass-panel border max-w-xs ${
+      className={`px-4 py-2.5 border-2 cursor-pointer select-none bg-surface text-ink transition-transform max-w-xs ${
         isSelected
-          ? 'ring-2 ring-blue-500 border-blue-400 scale-105 bg-slate-800'
-          : 'border-slate-700/60 hover:border-slate-500 hover:bg-slate-800/80'
+          ? 'border-accent-secondary shadow-[5px_5px_0px_var(--border)] translate-x-[-1px] translate-y-[-1px]'
+          : 'border-border shadow-[3px_3px_0px_var(--border)] hover:translate-x-[-1px] hover:translate-y-[-1px]'
       }`}
+      style={{
+        borderRadius: '0px',
+      }}
     >
-      <Handle type="target" position={Position.Top} className="w-2.5 h-2.5 bg-slate-400 border-2 border-slate-900" />
-      <Handle type="target" position={Position.Left} className="w-2.5 h-2.5 bg-slate-400 border-2 border-slate-900" />
+      <Handle
+        type="target"
+        position={Position.Top}
+        className="!w-2.5 !h-2.5 !bg-ink !border !border-border !rounded-none"
+      />
+      <Handle
+        type="target"
+        position={Position.Left}
+        className="!w-2.5 !h-2.5 !bg-ink !border !border-border !rounded-none"
+      />
 
-      <h4 className="text-sm font-semibold text-slate-100 leading-snug">{data.label}</h4>
+      <h4 className="text-sm font-mono font-bold text-ink leading-snug">{data.label}</h4>
 
-      <Handle type="source" position={Position.Bottom} className="w-2.5 h-2.5 bg-slate-400 border-2 border-slate-900" />
-      <Handle type="source" position={Position.Right} className="w-2.5 h-2.5 bg-slate-400 border-2 border-slate-900" />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="!w-2.5 !h-2.5 !bg-ink !border !border-border !rounded-none"
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        className="!w-2.5 !h-2.5 !bg-ink !border !border-border !rounded-none"
+      />
     </div>
   );
 });

@@ -10,7 +10,7 @@ import {
 import { Mindmap, MindmapNode } from '@visualli/shared';
 import { CustomRootNode, CustomChildNode } from './CustomNodes';
 import { getLayoutedElements } from '../utils/layout';
-import { Network, Sparkles } from 'lucide-react';
+import { Network } from 'lucide-react';
 
 interface MindmapCanvasProps {
   mindmap: Mindmap | null;
@@ -38,31 +38,36 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
 
   if (!mindmap) {
     return (
-      <div className="w-full h-full min-h-[450px] glass-panel rounded-2xl border border-slate-700/50 flex flex-col items-center justify-center p-8 text-center gap-4">
-        <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-          <Network className="w-12 h-12 stroke-[1.5]" />
+      <div className="w-full h-full min-h-[450px] bg-bg border-2 border-dashed border-border p-8 text-center font-mono flex flex-col items-center justify-center gap-4">
+        <div className="p-4 bg-surface border-2 border-border shadow-[4px_4px_0px_var(--border)] text-accent">
+          <Network className="w-10 h-10 stroke-[2]" />
         </div>
         <div className="max-w-md flex flex-col gap-2">
-          <h3 className="text-xl font-bold text-slate-100">No Mindmap Generated Yet</h3>
-          <p className="text-sm text-slate-400 leading-relaxed">
-            Paste your input text into the panel above and click <span className="text-blue-400 font-semibold">Generate Mindmap</span> to construct an interactive node-link diagram.
+          <h3 className="text-lg font-display font-black uppercase text-ink">
+            [ NO_MINDMAP_GENERATED ]
+          </h3>
+          <p className="text-xs text-ink/80 leading-relaxed font-mono">
+            Paste input document text above and press <span className="font-bold text-accent">[ GENERATE MINDMAP ]</span> to execute structured node extraction.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-800/60 px-3 py-1.5 rounded-full border border-slate-700">
-          <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-          <span>Supports automatic layout, node selection, and summary drawer</span>
+        <div className="text-[11px] font-bold text-ink bg-surface border border-border px-3 py-1 uppercase">
+          STRICT SCHEMA // 5-9 NODES // STAMPED RELATIONSHIPS
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full min-h-[500px] rounded-2xl overflow-hidden glass-panel border border-slate-700/50 relative shadow-2xl">
-      <div className="absolute top-4 left-4 z-10 bg-slate-900/80 backdrop-blur border border-slate-700/60 px-4 py-2 rounded-xl flex items-center gap-3">
-        <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+    <div className="w-full h-full min-h-[500px] bg-surface border-2 border-border shadow-[4px_4px_0px_var(--border)] relative overflow-hidden font-mono">
+      <div className="absolute top-4 left-4 z-10 bg-surface border-2 border-border px-3 py-1.5 shadow-[3px_3px_0px_var(--border)] flex items-center gap-2">
+        <div className="w-2.5 h-2.5 bg-accent" />
         <div>
-          <h3 className="text-sm font-bold text-slate-100 leading-tight">{mindmap.title}</h3>
-          <p className="text-[11px] text-slate-400">{mindmap.nodes.length} Nodes • Interactive Flow</p>
+          <h3 className="text-xs font-display font-black uppercase tracking-wide text-ink">
+            {mindmap.title}
+          </h3>
+          <p className="text-[10px] text-ink/70 uppercase">
+            {mindmap.nodes.length} NODES • DAGRE HIERARCHICAL LAYOUT
+          </p>
         </div>
       </div>
 
@@ -71,18 +76,18 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
         edges={edges}
         nodeTypes={nodeTypes}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
+        fitViewOptions={{ padding: 0.25 }}
         minZoom={0.2}
         maxZoom={1.5}
         defaultEdgeOptions={{ type: 'smoothstep' }}
         proOptions={{ hideAttribution: true }}
       >
-        <Controls className="!bg-slate-900/80 !border-slate-700 !text-slate-200 !rounded-xl overflow-hidden" />
-        <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#334155" />
+        <Controls className="!bg-surface !border-2 !border-border !shadow-[3px_3px_0px_var(--border)] !rounded-none" />
+        <Background variant={BackgroundVariant.Cross} gap={24} size={2} color="var(--border)" />
         <MiniMap
-          nodeColor={(n) => (n.type === 'rootNode' ? '#3b82f6' : '#1e293b')}
-          maskColor="rgba(15, 23, 42, 0.7)"
-          className="!bg-slate-900/90 !border-slate-700 !rounded-xl overflow-hidden"
+          nodeColor={(n) => (n.type === 'rootNode' ? '#FF4B1F' : 'var(--surface)')}
+          maskColor="rgba(0, 0, 0, 0.4)"
+          className="!bg-surface !border-2 !border-border !shadow-[4px_4px_0px_var(--border)] !rounded-none"
         />
       </ReactFlow>
     </div>

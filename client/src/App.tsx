@@ -7,7 +7,7 @@ import { MindmapCanvas } from './components/MindmapCanvas';
 import { SummaryPanel } from './components/SummaryPanel';
 import { HistorySidebar } from './components/HistorySidebar';
 import { Toast, ToastMessage } from './components/Toast';
-import { Sun, Moon, Sparkles, BrainCircuit, AlertTriangle } from 'lucide-react';
+import { Sun, Moon, Terminal, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 
 const queryClient = new QueryClient({
@@ -130,7 +130,7 @@ export const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-text transition-colors duration-300 flex flex-col font-sans">
+    <div className="min-h-screen bg-bg text-ink flex flex-col font-mono selection:bg-accent selection:text-white">
       <Toast toast={toast} onDismiss={() => setToast(null)} />
 
       <HistorySidebar
@@ -142,31 +142,33 @@ export const AppContent: React.FC = () => {
       />
 
       {/* Main Header */}
-      <header className="sticky top-0 z-30 glass-panel border-b border-slate-700/50 px-6 py-4 flex items-center justify-between shadow-md">
+      <header className="sticky top-0 z-30 bg-surface border-b-2 border-border px-6 py-4 flex items-center justify-between shadow-[0_4px_0_var(--border)]">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30">
-            <BrainCircuit className="w-6 h-6" />
+          <div className="p-2.5 bg-accent border-2 border-border text-white shadow-[2px_2px_0px_var(--border)]">
+            <Terminal className="w-6 h-6 stroke-[2.5]" />
           </div>
           <div>
-            <h1 className="text-xl font-extrabold tracking-tight text-slate-100 flex items-center gap-2">
-              Visualli <span className="text-blue-400 font-normal text-sm bg-blue-500/10 px-2 py-0.5 rounded-full border border-blue-500/20">Mini Mindmap</span>
+            <h1 className="text-xl font-display font-black tracking-tight text-ink uppercase flex items-center gap-2 leading-none">
+              VISUALLI <span className="bg-bg border border-border text-xs font-mono font-bold px-2 py-0.5 text-accent uppercase">[MINI_MINDMAP]</span>
             </h1>
-            <p className="text-xs text-slate-400">Strict LLM-to-JSON Structuring Engine</p>
+            <p className="text-xs font-mono text-ink/70 mt-1 uppercase font-bold">
+              [ STRUCTURAL LLM SCHEMA ENGINE ]
+            </p>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            <span>Strict Zod + Domain Validation</span>
+          <div className="hidden sm:flex items-center gap-2 text-xs font-mono font-bold text-ink bg-bg border-2 border-border px-3 py-1 shadow-[2px_2px_0px_var(--border)]">
+            <span className="text-accent">[AI]</span>
+            <span>STRICT ZOD + DOMAIN REPAIR</span>
           </div>
 
           <button
             onClick={() => setIsDarkMode((prev) => !prev)}
-            className="p-2.5 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700 transition-all"
+            className="brutal-btn p-2 text-ink flex items-center justify-center"
             title="Toggle Theme"
           >
-            {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
+            {isDarkMode ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-accent-secondary" />}
           </button>
         </div>
       </header>
@@ -179,16 +181,16 @@ export const AppContent: React.FC = () => {
         />
 
         {currentMindmap?.truncated && (
-          <div className="p-3 rounded-xl bg-amber-950/60 border border-amber-800/60 text-amber-200 text-xs flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+          <div className="p-3 bg-amber-500 text-black border-2 border-border font-mono text-xs font-bold shadow-[3px_3px_0px_var(--border)] flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0" />
             <span>
-              Note: This mindmap was generated from truncated input text (budget limit: 12,000 characters).
+              [TRUNCATION_WARNING] INPUT TEXT EXCEEDED 12,000 CHARACTERS AND WAS TRUNCATED BEFORE LLM INFERENCE.
             </span>
           </div>
         )}
 
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          <div className={`${selectedNode ? 'lg:col-span-2' : 'lg:col-span-3'} transition-all duration-300 h-[520px]`}>
+          <div className={`${selectedNode ? 'lg:col-span-2' : 'lg:col-span-3'} transition-all duration-200 h-[530px]`}>
             <MindmapCanvas
               mindmap={currentMindmap}
               selectedNodeId={selectedNode?.id || null}
@@ -208,6 +210,12 @@ export const AppContent: React.FC = () => {
           )}
         </div>
       </main>
+
+      {/* Brutalist Footer */}
+      <footer className="border-t-2 border-border bg-surface px-6 py-3 font-mono text-xs text-ink/70 flex items-center justify-between">
+        <span className="font-bold uppercase">[ VISUALLI // NEO-BRUTALIST EDITION ]</span>
+        <span className="font-bold uppercase text-accent">[ REACT FLOW + DAGRE + LLM REPAIR ]</span>
+      </footer>
     </div>
   );
 };
