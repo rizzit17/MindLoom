@@ -5,28 +5,30 @@
 
 @layer base {
   :root {
-    --bg: #F5F1E8;
-    --ink: #111111;
-    --accent: #FF4B1F;
-    --accent-secondary: #0047FF;
+    --bg: #F7F4EC;
     --surface: #FFFFFF;
-    --border: #111111;
+    --ink: #17171A;
+    --border: #D8D2C4;
+    --accent: #E8734A;
+    --accent-secondary: #5B7FE0;
     --font-display: 'Space Grotesk', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
   }
 
   .dark {
-    --bg: #121212;
-    --ink: #F5F1E8;
-    --accent: #FF4B1F;
-    --accent-secondary: #0047FF;
-    --surface: #1C1C1C;
-    --border: #F5F1E8;
+    --bg: #17171A;
+    --surface: #1E1E22;
+    --ink: #EDEBE4;
+    --border: #3A3A40;
+    --accent: #E8734A;
+    --accent-secondary: #5B7FE0;
   }
 }
 
 body {
   background-color: var(--bg);
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 24px 24px;
   color: var(--ink);
   font-family: var(--font-mono);
   margin: 0;
@@ -35,44 +37,44 @@ body {
   transition: background-color 150ms ease, color 150ms ease;
 }
 
-/* React Flow Canvas Overrides for Brutalist Style */
+/* React Flow Overrides for Softened Studio Look */
 .react-flow__renderer {
   background-color: var(--bg) !important;
+  background-image: radial-gradient(var(--border) 1px, transparent 1px) !important;
+  background-size: 24px 24px !important;
 }
 
 .react-flow__edge-path {
   stroke: var(--accent-secondary) !important;
-  stroke-width: 3px !important;
+  stroke-width: 2.5px !important;
 }
 
 .react-flow__edge-textbg {
   fill: var(--surface) !important;
   stroke: var(--border) !important;
   stroke-width: 1.5px !important;
-  rx: 0px !important;
-  ry: 0px !important;
+  rx: 3px !important;
+  ry: 3px !important;
 }
 
 .react-flow__edge-text {
   fill: var(--ink) !important;
   font-family: var(--font-mono) !important;
   font-size: 10px !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
+  font-weight: 600 !important;
 }
 
 .react-flow__controls {
   background: var(--surface) !important;
-  border: 2px solid var(--border) !important;
+  border: 1.5px solid var(--border) !important;
   box-shadow: 3px 3px 0px var(--border) !important;
-  border-radius: 0px !important;
+  border-radius: 4px !important;
 }
 
 .react-flow__controls-button {
   background: var(--surface) !important;
   border-bottom: 1px solid var(--border) !important;
   color: var(--ink) !important;
-  border-radius: 0px !important;
   fill: var(--ink) !important;
 }
 
@@ -82,78 +84,79 @@ body {
 
 .react-flow__minimap {
   background: var(--surface) !important;
-  border: 2px solid var(--border) !important;
-  box-shadow: 4px 4px 0px var(--border) !important;
-  border-radius: 0px !important;
+  border: 1.5px solid var(--border) !important;
+  box-shadow: 3px 3px 0px var(--border) !important;
+  border-radius: 4px !important;
 }
 
-/* Brutalist Custom Utility Classes */
-.brutal-box {
+/* Utility Classes for Studio Developer Tool Aesthetics */
+.studio-panel {
   background-color: var(--surface);
   color: var(--ink);
-  border: 2px solid var(--border);
-  box-shadow: 4px 4px 0px var(--border);
-  border-radius: 0px;
-}
-
-.brutal-btn {
-  background-color: var(--surface);
-  color: var(--ink);
-  border: 2px solid var(--border);
+  border: 1.5px solid var(--border);
   box-shadow: 3px 3px 0px var(--border);
-  border-radius: 0px;
+  border-radius: 4px;
+}
+
+.studio-btn {
+  background-color: var(--surface);
+  color: var(--ink);
+  border: 1.5px solid var(--border);
+  box-shadow: 2px 2px 0px var(--border);
+  border-radius: 4px;
   font-family: var(--font-mono);
-  font-weight: 700;
-  transition: transform 150ms ease, box-shadow 150ms ease;
+  font-weight: 500;
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
   cursor: pointer;
   user-select: none;
 }
 
-.brutal-btn:hover {
+.studio-btn:hover {
   transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0px var(--border);
+  box-shadow: 3px 3px 0px var(--border);
 }
 
-.brutal-btn:active {
-  transform: translate(2px, 2px);
+.studio-btn:active {
+  transform: translate(1px, 1px);
   box-shadow: 1px 1px 0px var(--border);
 }
 
-.brutal-btn-accent {
+.studio-btn-primary {
   background-color: var(--accent);
   color: #ffffff;
-  border: 2px solid var(--border);
+  border: 1.5px solid var(--border);
   box-shadow: 3px 3px 0px var(--border);
-  border-radius: 0px;
+  border-radius: 4px;
   font-family: var(--font-display);
   font-weight: 700;
-  transition: transform 150ms ease, box-shadow 150ms ease;
+  transition: transform 120ms ease, box-shadow 120ms ease;
   cursor: pointer;
 }
 
-.brutal-btn-accent:hover {
+.studio-btn-primary:hover {
   transform: translate(-1px, -1px);
   box-shadow: 4px 4px 0px var(--border);
+  background-color: #D96238;
 }
 
-.brutal-btn-accent:active {
-  transform: translate(2px, 2px);
+.studio-btn-primary:active {
+  transform: translate(1px, 1px);
   box-shadow: 1px 1px 0px var(--border);
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
   background: var(--bg);
-  border-left: 2px solid var(--border);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--ink);
+  background: var(--border);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

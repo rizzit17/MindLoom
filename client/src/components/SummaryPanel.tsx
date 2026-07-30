@@ -32,7 +32,7 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({
       return {
         node: targetNode,
         label: conn.label,
-        direction: conn.from === node.id ? 'OUTGOING' : 'INCOMING',
+        direction: conn.from === node.id ? 'Outgoing' : 'Incoming',
       };
     })
     .filter((item): item is { node: MindmapNode; label: string | undefined; direction: string } => Boolean(item.node));
@@ -40,68 +40,67 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, x: 20 }}
+        initial={{ opacity: 0, x: 15 }}
         animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
-        transition={{ duration: 0.15 }}
-        className="bg-surface border-2 border-border shadow-[6px_6px_0px_var(--border)] font-mono p-5 flex flex-col gap-4 w-full max-w-sm"
-        style={{ borderRadius: '0px' }}
+        exit={{ opacity: 0, x: 15 }}
+        transition={{ duration: 0.12 }}
+        className="bg-surface border-[1.5px] border-border shadow-[4px_4px_0px_var(--border)] rounded-[4px] font-mono p-5 flex flex-col gap-4 w-full max-w-sm"
       >
-        <div className="flex items-start justify-between gap-3 border-b-2 border-border pb-3">
+        <div className="flex items-start justify-between gap-3 border-b border-border pb-3">
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center gap-2 flex-wrap">
               <Tag className="w-3.5 h-3.5 text-accent" />
-              <span className="text-xs font-bold text-ink font-mono">NODE_ID: {node.id}</span>
+              <span className="text-xs text-ink/70 font-mono">Node ID: {node.id}</span>
               {isRoot && (
-                <span className="text-[10px] font-bold tracking-wider uppercase text-white bg-accent border border-border px-2 py-0.5 font-mono">
+                <span className="text-[10px] font-bold text-white bg-accent border border-border px-2 py-0.5 rounded-[3px]">
                   [ROOT TOPIC]
                 </span>
               )}
             </div>
-            <h3 className="text-base font-display font-black text-ink uppercase leading-snug">
+            <h3 className="text-base font-display font-bold text-ink leading-snug">
               {node.label}
             </h3>
           </div>
           <button
             onClick={onClose}
             aria-label="Close panel"
-            className="brutal-btn p-1 text-ink"
+            className="studio-btn p-1 text-ink"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="border-2 border-border bg-bg p-3.5 flex flex-col gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-ink/70">
-            // SUMMARY_DETAILS (1-SENTENCE CONSTRAINT)
+        <div className="border-[1.5px] border-border bg-bg p-3.5 rounded-[4px] flex flex-col gap-1.5">
+          <span className="text-[10px] font-medium uppercase tracking-wider text-ink/60 font-mono">
+            Summary Details
           </span>
           <p className="text-xs text-ink leading-relaxed font-mono font-medium">{node.summary}</p>
         </div>
 
         {connectedNodes.length > 0 && (
-          <div className="flex flex-col gap-2.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-ink">
-              CONNECTED_RELATIONSHIPS ({connectedNodes.length})
+          <div className="flex flex-col gap-2">
+            <span className="text-xs font-semibold text-ink">
+              Connected Nodes ({connectedNodes.length})
             </span>
-            <div className="flex flex-col gap-2 max-h-52 overflow-y-auto pr-1">
+            <div className="flex flex-col gap-1.5 max-h-52 overflow-y-auto pr-1">
               {connectedNodes.map(({ node: relNode, label, direction }, idx) => (
                 <button
                   key={idx}
                   onClick={() => onSelectNode(relNode)}
-                  className="brutal-btn p-2.5 text-left flex items-center justify-between group"
+                  className="studio-btn p-2.5 text-left flex items-center justify-between group"
                 >
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-xs font-bold text-ink group-hover:text-accent transition-colors">
+                    <span className="text-xs font-medium text-ink group-hover:text-accent transition-colors">
                       {relNode.label}
                     </span>
                     {label && (
-                      <span className="text-[10px] font-mono text-ink/70 uppercase">
-                        TAG: [{label.toUpperCase()}]
+                      <span className="text-[10px] font-mono text-ink/60">
+                        {label}
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-1 text-ink group-hover:text-accent">
-                    <span className="text-[9px] uppercase font-mono font-bold bg-bg border border-border px-1">
+                  <div className="flex items-center gap-1 text-ink/70 group-hover:text-accent">
+                    <span className="text-[9px] font-mono bg-bg border border-border px-1 rounded-[2px]">
                       {direction}
                     </span>
                     <ArrowUpRight className="w-3.5 h-3.5" />

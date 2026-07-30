@@ -6,21 +6,25 @@ export default {
     extend: {
       colors: {
         bg: 'var(--bg)',
+        surface: 'var(--surface)',
         ink: 'var(--ink)',
+        border: 'var(--border)',
         accent: 'var(--accent)',
         'accent-secondary': 'var(--accent-secondary)',
-        surface: 'var(--surface)',
-        border: 'var(--border)',
       },
       fontFamily: {
         display: ['"Space Grotesk"', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
       boxShadow: {
-        brutal: '4px 4px 0px var(--border)',
+        brutal: '3px 3px 0px var(--border)',
         'brutal-sm': '2px 2px 0px var(--border)',
-        'brutal-lg': '6px 6px 0px var(--border)',
-        'brutal-accent': '4px 4px 0px var(--accent)',
+        'brutal-lg': '4px 4px 0px var(--border)',
+      },
+      borderRadius: {
+        DEFAULT: '4px',
+        md: '4px',
+        lg: '6px',
       },
     },
   },

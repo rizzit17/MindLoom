@@ -38,35 +38,35 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
 
   if (!mindmap) {
     return (
-      <div className="w-full h-full min-h-[450px] bg-bg border-2 border-dashed border-border p-8 text-center font-mono flex flex-col items-center justify-center gap-4">
-        <div className="p-4 bg-surface border-2 border-border shadow-[4px_4px_0px_var(--border)] text-accent">
-          <Network className="w-10 h-10 stroke-[2]" />
+      <div className="w-full h-full min-h-[450px] bg-bg border-[1.5px] border-dashed border-border p-8 text-center font-mono rounded-[4px] flex flex-col items-center justify-center gap-4">
+        <div className="p-3 bg-surface border-[1.5px] border-border shadow-[2px_2px_0px_var(--border)] rounded-[4px] text-accent">
+          <Network className="w-8 h-8 stroke-[2]" />
         </div>
-        <div className="max-w-md flex flex-col gap-2">
-          <h3 className="text-lg font-display font-black uppercase text-ink">
-            [ NO_MINDMAP_GENERATED ]
+        <div className="max-w-md flex flex-col gap-1.5">
+          <h3 className="text-base font-display font-bold text-ink">
+            No Mindmap Generated
           </h3>
-          <p className="text-xs text-ink/80 leading-relaxed font-mono">
-            Paste input document text above and press <span className="font-bold text-accent">[ GENERATE MINDMAP ]</span> to execute structured node extraction.
+          <p className="text-xs text-ink/70 leading-relaxed font-mono">
+            Paste source text above and click <span className="font-semibold text-accent font-display">Generate Mindmap</span> to extract structured entities.
           </p>
         </div>
-        <div className="text-[11px] font-bold text-ink bg-surface border border-border px-3 py-1 uppercase">
-          STRICT SCHEMA // 5-9 NODES // STAMPED RELATIONSHIPS
+        <div className="text-[11px] text-ink/80 bg-surface border border-border px-3 py-1 rounded-[3px]">
+          Structured Zod Schema • 5–9 Nodes • Dagre Layout
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full min-h-[500px] bg-surface border-2 border-border shadow-[4px_4px_0px_var(--border)] relative overflow-hidden font-mono">
-      <div className="absolute top-4 left-4 z-10 bg-surface border-2 border-border px-3 py-1.5 shadow-[3px_3px_0px_var(--border)] flex items-center gap-2">
-        <div className="w-2.5 h-2.5 bg-accent" />
+    <div className="w-full h-full min-h-[500px] bg-surface border-[1.5px] border-border shadow-[3px_3px_0px_var(--border)] rounded-[4px] relative overflow-hidden font-mono">
+      <div className="absolute top-4 left-4 z-10 bg-surface border-[1.5px] border-border px-3 py-1.5 shadow-[2px_2px_0px_var(--border)] rounded-[4px] flex items-center gap-2">
+        <div className="w-2.5 h-2.5 bg-accent rounded-full" />
         <div>
-          <h3 className="text-xs font-display font-black uppercase tracking-wide text-ink">
+          <h3 className="text-xs font-display font-bold text-ink tracking-tight">
             {mindmap.title}
           </h3>
-          <p className="text-[10px] text-ink/70 uppercase">
-            {mindmap.nodes.length} NODES • DAGRE HIERARCHICAL LAYOUT
+          <p className="text-[10px] text-ink/60 font-mono">
+            {mindmap.nodes.length} nodes • Auto Layout
           </p>
         </div>
       </div>
@@ -82,12 +82,12 @@ export const MindmapCanvas: React.FC<MindmapCanvasProps> = ({
         defaultEdgeOptions={{ type: 'smoothstep' }}
         proOptions={{ hideAttribution: true }}
       >
-        <Controls className="!bg-surface !border-2 !border-border !shadow-[3px_3px_0px_var(--border)] !rounded-none" />
-        <Background variant={BackgroundVariant.Cross} gap={24} size={2} color="var(--border)" />
+        <Controls className="!bg-surface !border-[1.5px] !border-border !shadow-[2px_2px_0px_var(--border)] !rounded-[4px]" />
+        <Background variant={BackgroundVariant.Dots} gap={24} size={1.5} color="var(--border)" />
         <MiniMap
-          nodeColor={(n) => (n.type === 'rootNode' ? '#FF4B1F' : 'var(--surface)')}
-          maskColor="rgba(0, 0, 0, 0.4)"
-          className="!bg-surface !border-2 !border-border !shadow-[4px_4px_0px_var(--border)] !rounded-none"
+          nodeColor={(n) => (n.type === 'rootNode' ? '#E8734A' : 'var(--surface)')}
+          maskColor="rgba(0, 0, 0, 0.3)"
+          className="!bg-surface !border-[1.5px] !border-border !shadow-[3px_3px_0px_var(--border)] !rounded-[4px]"
         />
       </ReactFlow>
     </div>
