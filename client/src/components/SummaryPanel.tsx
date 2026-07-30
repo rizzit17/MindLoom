@@ -35,7 +35,7 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({
         direction: conn.from === node.id ? 'outgoing' : 'incoming',
       };
     })
-    .filter((item): item is { node: MindmapNode; label?: string; direction: string } => item.node !== undefined);
+    .filter((item): item is { node: MindmapNode; label: string | undefined; direction: string } => Boolean(item.node));
 
   return (
     <AnimatePresence>
@@ -61,6 +61,7 @@ export const SummaryPanel: React.FC<SummaryPanelProps> = ({
           </div>
           <button
             onClick={onClose}
+            aria-label="Close panel"
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
