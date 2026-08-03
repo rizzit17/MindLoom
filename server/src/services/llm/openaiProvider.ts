@@ -1,12 +1,13 @@
 import OpenAI from 'openai';
 import { LlmClient, RepairContext } from './llmClient';
+import { MockProvider } from './mockProvider';
 import { SYSTEM_PROMPT, createDeveloperPrompt, createRepairPrompt } from './prompts';
-import { BadGatewayError } from '../../middleware/errorHandler';
 import { logger } from '../../utils/logger';
 
 export class OpenAiProvider implements LlmClient {
   private client: OpenAI;
   private model: string;
+  private mockFallback: MockProvider;
 
   constructor(apiKey: string, baseURL?: string, model?: string) {
     this.client = new OpenAI({
@@ -14,6 +15,7 @@ export class OpenAiProvider implements LlmClient {
       baseURL: baseURL || undefined,
     });
     this.model = model || 'gpt-4o-mini';
+    this.mockFallback = new MockProvider();
   }
 
   async generateMindmap(text: string, repairContext?: RepairContext): Promise<string> {
@@ -37,16 +39,15 @@ export class OpenAiProvider implements LlmClient {
       const content = response.choices[0]?.message?.content;
 
       if (!content) {
-        throw new BadGatewayError('LLM Provider returned empty response content');
+        throw new Error('LLM Provider returned empty response content');
       }
 
       return content;
     } catch (error) {
-      if (error instanceof BadGatewayError) throw error;
-      logger.error('LLM API call failed', error);
-      throw new BadGatewayError('Failed to generate mindmap from LLM provider', [
-        error instanceof Error ? error.message : String(error),
-      ]);
+      logger.warn('LLM API call failed. Falling back to MockProvider for resilient mindmap generation.', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return this.mockFallback.generateMindmap(text, repairContext);
     }
   }
 }

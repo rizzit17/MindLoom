@@ -10,7 +10,7 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30s timeout for LLM generation
+  timeout: 60000, // 60s timeout for cloud LLM generation
 });
 
 export interface ApiErrorResponse {
