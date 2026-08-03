@@ -8,4 +8,5 @@ server/.env
 *.db-journal
 *.db-shm
 *.db-wal
+*.zip
 visualli-mini-mindmap
