@@ -1,9 +1,14 @@
 import axios from 'axios';
 import { Mindmap, MindmapSummaryItem } from '@visualli/shared';
 
+// Runtime environment check: if running on non-localhost (e.g. Render production), use relative path
+const isLocalhost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
-  (import.meta.env.PROD ? '' : 'http://localhost:3001');
+  (!isLocalhost ? '' : 'http://localhost:3001');
 
 const apiClient = axios.create({
   baseURL: `${API_BASE_URL}/api`,
